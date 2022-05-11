@@ -5,4 +5,5 @@ import numpy as np
 np.set_printoptions(precision=8, suppress=True, linewidth=400, threshold=100)
 import tensorflow as tf
 tf.keras.backend.set_floatx('float64')
-# tf.
+# tf.config.run_functions_eagerly(True)
+tf.keras.backend.set_epsilon(tf.experimental.nu

@@ -12,4 +12,4 @@ import gymnasium as gym
 import gym_util, model_util as util, model_nets as nets
 # CUDA 11.8.0_522.06, CUDNN 8.6.0.163, tensorflow-gpu==2.10.0, tensorflow_probability==0.18.0
 physical_devices_gpu = tf.config.list_physical_devices('GPU')
-for i in range(len(phys
+for i in range(len(physical_devices_gpu)): tf.config.experimental.set_memory_growth(physical_devices_gpu[i], True)

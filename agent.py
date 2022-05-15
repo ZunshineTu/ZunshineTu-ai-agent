@@ -16,4 +16,4 @@ for i in range(len(physical_devices_gpu)): tf.config.experimental.set_memory_gro
 
 
 class GeneralAI(tf.keras.Model):
-    def __init__(self, arch, env, trader
+    def __init__(self, arch, env, trader, env_render, save_model, chkpts, max_episodes, max_steps, learn_rate

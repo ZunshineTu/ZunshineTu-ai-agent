@@ -20,4 +20,5 @@ class GeneralAI(tf.keras.Model):
         super(GeneralAI, self).__init__()
         compute_dtype = tf.dtypes.as_dtype(self.compute_dtype)
         self.float_max = tf.constant(compute_dtype.max, compute_dtype)
-        self.float_maxroot = tf.constan
+        self.float_maxroot = tf.constant(tf.math.sqrt(self.float_max), compute_dtype)
+        self.float_eps = tf.constant

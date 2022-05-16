@@ -19,4 +19,5 @@ class GeneralAI(tf.keras.Model):
     def __init__(self, arch, env, trader, env_render, save_model, chkpts, max_episodes, max_steps, learn_rates, latent_size, latent_dist, mixture_multi, net_lstm, net_attn, aio_max_latents, aug_data_step, aug_data_pos):
         super(GeneralAI, self).__init__()
         compute_dtype = tf.dtypes.as_dtype(self.compute_dtype)
-        self.float_max = tf.c
+        self.float_max = tf.constant(compute_dtype.max, compute_dtype)
+        self.float_maxroot = tf.constan

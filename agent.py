@@ -23,4 +23,5 @@ class GeneralAI(tf.keras.Model):
         self.float_maxroot = tf.constant(tf.math.sqrt(self.float_max), compute_dtype)
         self.float_eps = tf.constant(tf.experimental.numpy.finfo(compute_dtype).eps, compute_dtype)
         self.float_eps_max = tf.constant(1.0 / self.float_eps, compute_dtype)
-        self.loss_scale = tf.
+        self.loss_scale = tf.math.exp(tf.math.log(self.float_eps_max) * (1/2))
+        self.float64_zero = tf.constant(0, tf.float64)

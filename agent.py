@@ -26,4 +26,5 @@ class GeneralAI(tf.keras.Model):
         self.loss_scale = tf.math.exp(tf.math.log(self.float_eps_max) * (1/2))
         self.float64_zero = tf.constant(0, tf.float64)
 
-        self.arch, self.env, self.trader, self.env_render, self.save_model = 
+        self.arch, self.env, self.trader, self.env_render, self.save_model = arch, env, trader, env_render, save_model
+        self.chkpts, self.max

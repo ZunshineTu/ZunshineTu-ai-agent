@@ -27,4 +27,5 @@ class GeneralAI(tf.keras.Model):
         self.float64_zero = tf.constant(0, tf.float64)
 
         self.arch, self.env, self.trader, self.env_render, self.save_model = arch, env, trader, env_render, save_model
-        self.chkpts, self.max_episodes, self.max_steps, self.learn_rates = tf.constant(chkpts, tf.int32), t
+        self.chkpts, self.max_episodes, self.max_steps, self.learn_rates = tf.constant(chkpts, tf.int32), tf.constant(max_episodes, tf.int32), tf.constant(max_steps, tf.int32), {}
+        for k,v i

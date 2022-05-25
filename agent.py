@@ -28,4 +28,5 @@ class GeneralAI(tf.keras.Model):
 
         self.arch, self.env, self.trader, self.env_render, self.save_model = arch, env, trader, env_render, save_model
         self.chkpts, self.max_episodes, self.max_steps, self.learn_rates = tf.constant(chkpts, tf.int32), tf.constant(max_episodes, tf.int32), tf.constant(max_steps, tf.int32), {}
-        for k,v in learn_rates.items(): self.learn_rates[k] = tf.constant(v, compute_dtyp
+        for k,v in learn_rates.items(): self.learn_rates[k] = tf.constant(v, compute_dtype)
+        self.initializer = tf.keras.initializers.GlorotUniform(time.time_n

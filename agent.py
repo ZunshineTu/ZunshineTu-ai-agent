@@ -31,4 +31,4 @@ class GeneralAI(tf.keras.Model):
         for k,v in learn_rates.items(): self.learn_rates[k] = tf.constant(v, compute_dtype)
         self.initializer = tf.keras.initializers.GlorotUniform(time.time_ns())
 
-        self.obs_spec, self.obs_zero, _ = gym_util.get_spec(env.observation_space
+        self.obs_spec, self.obs_zero, _ = gym_util.get_spec(env.observation_space, space_name='obs', compute_dtype=self.compute_dtype, net_attn_

@@ -32,4 +32,4 @@ class GeneralAI(tf.keras.Model):
         self.initializer = tf.keras.initializers.GlorotUniform(time.time_ns())
 
         self.obs_spec, self.obs_zero, _ = gym_util.get_spec(env.observation_space, space_name='obs', compute_dtype=self.compute_dtype, net_attn_io=net_attn['io'], aio_max_latents=aio_max_latents, mixture_multi=mixture_multi)
-        self.action
+        self.action_spec, _, self.action_zero_out = gym_util.get_spec(env.action_space, space_name='actions', comp

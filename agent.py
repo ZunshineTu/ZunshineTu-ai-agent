@@ -35,4 +35,4 @@ class GeneralAI(tf.keras.Model):
         self.action_spec, _, self.action_zero_out = gym_util.get_spec(env.action_space, space_name='actions', compute_dtype=self.compute_dtype, mixture_multi=mixture_multi)
         self.obs_spec_len, self.action_spec_len = len(self.obs_spec), len(self.action_spec)
         self.action_total_size = tf.constant(np.sum([np.prod(feat['step_shape']) for feat in self.action_spec]),compute_dtype)
-        self.gym_step_shapes = [feat['step_shape'] fo
+        self.gym_step_shapes = [feat['step_shape'] for feat in self.obs_spec] + [tf.TensorShape((1,1)), tf.TensorShape((1,1)), tf

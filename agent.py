@@ -36,4 +36,5 @@ class GeneralAI(tf.keras.Model):
         self.obs_spec_len, self.action_spec_len = len(self.obs_spec), len(self.action_spec)
         self.action_total_size = tf.constant(np.sum([np.prod(feat['step_shape']) for feat in self.action_spec]),compute_dtype)
         self.gym_step_shapes = [feat['step_shape'] for feat in self.obs_spec] + [tf.TensorShape((1,1)), tf.TensorShape((1,1)), tf.TensorShape((1,2)) if trader else tf.TensorShape((1,1))]
-        self.gym_step_dtypes = [feat['dtype'] for feat in self.obs_spec] + [tf.float64, tf.bool, tf.
+        self.gym_step_dtypes = [feat['dtype'] for feat in self.obs_spec] + [tf.float64, tf.bool, tf.float64]
+        self.rewards_zero, self.dones_zero = tf.constant([[0]],

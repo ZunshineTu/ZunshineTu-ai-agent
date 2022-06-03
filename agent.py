@@ -38,4 +38,6 @@ class GeneralAI(tf.keras.Model):
         self.gym_step_shapes = [feat['step_shape'] for feat in self.obs_spec] + [tf.TensorShape((1,1)), tf.TensorShape((1,1)), tf.TensorShape((1,2)) if trader else tf.TensorShape((1,1))]
         self.gym_step_dtypes = [feat['dtype'] for feat in self.obs_spec] + [tf.float64, tf.bool, tf.float64]
         self.rewards_zero, self.dones_zero = tf.constant([[0]],tf.float64), tf.constant([[False]],tf.bool)
-        self.step_zero, self.ste
+        self.step_zero, self.step_size_one = tf.constant([[0]]), tf.constant([[1]])
+
+        latent_spec = {'dtyp

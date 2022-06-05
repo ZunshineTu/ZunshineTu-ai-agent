@@ -42,4 +42,5 @@ class GeneralAI(tf.keras.Model):
 
         latent_spec = {'dtype':compute_dtype, 'latent_size':latent_size, 'num_latents':1, 'max_latents':aio_max_latents}
         latent_spec.update({'inp':512, 'midp':256, 'outp':512, 'evo':64})
-        if latent_dist == 'd': latent_spec.update({'dist_type':'d', 'num_components':latent_size,
+        if latent_dist == 'd': latent_spec.update({'dist_type':'d', 'num_components':latent_size, 'event_shape':(latent_size,)}) # deterministic
+        if latent_dist == 

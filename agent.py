@@ -44,4 +44,4 @@ class GeneralAI(tf.keras.Model):
         latent_spec.update({'inp':512, 'midp':256, 'outp':512, 'evo':64})
         if latent_dist == 'd': latent_spec.update({'dist_type':'d', 'num_components':latent_size, 'event_shape':(latent_size,)}) # deterministic
         if latent_dist == 'c': latent_spec.update({'dist_type':'c', 'num_components':0, 'event_shape':(latent_size, latent_size)}) # categorical # TODO https://keras.io/examples/generative/vq_vae/
-        if latent_dist == 'mx': latent_spec.update({'dist_type'
+        if latent_dist == 'mx': latent_spec.update({'dist_type':'mx', 'num_components':int(latent_size/16), 'event_shape':(latent_size,)}) # 

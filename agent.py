@@ -52,4 +52,5 @@ class GeneralAI(tf.keras.Model):
 
 
         if arch in ('PG',):
-            opt_spec = [{'name':'action', 'type':'a', 'schedule_type':'', 'learn_rate':self.learn_rates['action'], 'float_ep
+            opt_spec = [{'name':'action', 'type':'a', 'schedule_type':'', 'learn_rate':self.learn_rates['action'], 'float_eps':self.float_eps}]
+            stats_spec = [{'name':'rwd', 'b1':0.99, 'b2':0.99, 'dtype':tf.

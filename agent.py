@@ -57,4 +57,8 @@ class GeneralAI(tf.keras.Model):
             self.action = nets.ArchFull('A', inputs, opt_spec, stats_spec, self.obs_spec, self.action_spec, latent_spec, obs_latent=False, net_blocks=2, net_lstm=net_lstm, net_attn=net_attn, num_heads=4, memory_size=max_steps, latent_multi=1, aug_data_pos=aug_data_pos)
             outputs = self.action(inputs)
             self.action.optimizer_weights = util.optimizer_build(self.action.optimizer['action'], self.action.trainable_variables)
-            util.net_build(self.action, s
+            util.net_build(self.action, self.initializer)
+
+
+        self.metrics_spec()
+        self.reset_states = tf.

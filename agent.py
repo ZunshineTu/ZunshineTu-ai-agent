@@ -61,4 +61,4 @@ class GeneralAI(tf.keras.Model):
 
 
         self.metrics_spec()
-        self.reset_states = tf.
+        self.reset_states = tf.function(self.reset_states, experimental_autograph_options=tf.autograph.experime

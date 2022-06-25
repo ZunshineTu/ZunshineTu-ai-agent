@@ -67,4 +67,5 @@ class GeneralAI(tf.keras.Model):
 
 
     def metrics_spec(self):
-      
+        metrics_loss = OrderedDict()
+        metrics_loss['2rewards*'] = {'-rewards_

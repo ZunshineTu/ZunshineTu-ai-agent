@@ -69,4 +69,6 @@ class GeneralAI(tf.keras.Model):
     def metrics_spec(self):
         metrics_loss = OrderedDict()
         metrics_loss['2rewards*'] = {'-rewards_ma':np.float64, '-rewards_total+':np.float64, 'rewards_final=':np.float64}
-        metrics_loss
+        metrics_loss['1steps'] = {'steps+':np.int64}
+        if self.arch == 'PG':
+            metrics_loss[

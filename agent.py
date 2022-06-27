@@ -71,4 +71,5 @@ class GeneralAI(tf.keras.Model):
         metrics_loss['2rewards*'] = {'-rewards_ma':np.float64, '-rewards_total+':np.float64, 'rewards_final=':np.float64}
         metrics_loss['1steps'] = {'steps+':np.int64}
         if self.arch == 'PG':
-            metrics_loss[
+            metrics_loss['1nets*'] = {'-loss_ma':np.float64, '-loss_action':np.float64}
+            metri

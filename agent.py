@@ -76,4 +76,5 @@ class GeneralAI(tf.keras.Model):
             metrics_loss['1extras2*'] = {'actlog0':np.float64, 'actlog1':np.float64}
 
         for loss_group in metrics_loss.values():
-            for k in loss_group.keys
+            for k in loss_group.keys():
+                if k.endswith('=') or k.endswith('+'): loss_group[k] = [0 f

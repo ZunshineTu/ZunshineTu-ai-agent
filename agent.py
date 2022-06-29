@@ -83,4 +83,6 @@ class GeneralAI(tf.keras.Model):
 
     def metrics_update(self, *args):
         args = list(args)
-        log_metrics, episode, idx = arg
+        log_metrics, episode, idx = args[0], args[1], 2
+        for loss_group in self.metrics_loss.values():
+        

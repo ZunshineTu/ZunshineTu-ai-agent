@@ -77,4 +77,5 @@ class GeneralAI(tf.keras.Model):
 
         for loss_group in metrics_loss.values():
             for k in loss_group.keys():
-                if k.endswith('=') or k.endswith('+'): loss_group[k] = [0 f
+                if k.endswith('=') or k.endswith('+'): loss_group[k] = [0 for i in range(self.max_episodes)]
+                else: loss_group[k] = [[] for i in ra

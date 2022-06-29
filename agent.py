@@ -81,4 +81,6 @@ class GeneralAI(tf.keras.Model):
                 else: loss_group[k] = [[] for i in range(self.max_episodes)]
         self.metrics_loss = metrics_loss
 
-    def metrics_update(s
+    def metrics_update(self, *args):
+        args = list(args)
+        log_metrics, episode, idx = arg

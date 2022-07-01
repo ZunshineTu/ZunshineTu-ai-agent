@@ -89,4 +89,6 @@ class GeneralAI(tf.keras.Model):
                 if log_metrics[idx-2]:
                     if k.endswith('='): loss_group[k][episode] = args[idx]
                     elif k.endswith('+'): loss_group[k][episode] += args[idx]
-                    else: loss_gro
+                    else: loss_group[k][episode] += [args[idx]]
+                idx += 1
+        return np.asarray(0, np.

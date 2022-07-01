@@ -85,4 +85,6 @@ class GeneralAI(tf.keras.Model):
         args = list(args)
         log_metrics, episode, idx = args[0], args[1], 2
         for loss_group in self.metrics_loss.values():
-        
+            for k in loss_group.keys():
+                if log_metrics[idx-2]:
+ 

@@ -91,4 +91,8 @@ class GeneralAI(tf.keras.Model):
                     elif k.endswith('+'): loss_group[k][episode] += args[idx]
                     else: loss_group[k][episode] += [args[idx]]
                 idx += 1
-        return np.asarray(0, np.
+        return np.asarray(0, np.int32) # dummy
+
+
+    def env_reset(self, dummy):
+        obs, info = s

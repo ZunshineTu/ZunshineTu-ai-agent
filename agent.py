@@ -96,4 +96,6 @@ class GeneralAI(tf.keras.Model):
 
     def env_reset(self, dummy):
         obs, info = self.env.reset(); reward, done = 0.0, False
-        if self.env_render: self
+        if self.env_render: self.env.render()
+        if hasattr(self.env,'np_struc'): rtn = gym_util.struc_to_feat(obs)
+       

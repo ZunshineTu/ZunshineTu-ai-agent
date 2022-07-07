@@ -101,3 +101,6 @@ class GeneralAI(tf.keras.Model):
         else: rtn = gym_util.space_to_feat(obs, self.env.observation_space)
         metrics = info['metrics'] if 'metrics' in info else [0]
         rtn += [np.asarray([[reward]], np.float64), np.asarray([[done]], bool), np.asarray([metrics], np.float64)]
+        return rtn
+    def env_step(self, *args): # args = tuple of ndarrays
+        if 

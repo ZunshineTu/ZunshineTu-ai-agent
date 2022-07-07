@@ -99,4 +99,5 @@ class GeneralAI(tf.keras.Model):
         if self.env_render: self.env.render()
         if hasattr(self.env,'np_struc'): rtn = gym_util.struc_to_feat(obs)
         else: rtn = gym_util.space_to_feat(obs, self.env.observation_space)
-        me
+        metrics = info['metrics'] if 'metrics' in info else [0]
+        rtn +=

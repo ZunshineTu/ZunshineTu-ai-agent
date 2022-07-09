@@ -103,4 +103,6 @@ class GeneralAI(tf.keras.Model):
         rtn += [np.asarray([[reward]], np.float64), np.asarray([[done]], bool), np.asarray([metrics], np.float64)]
         return rtn
     def env_step(self, *args): # args = tuple of ndarrays
-        if hasattr(self.env,'np_struc'): action = gym_util.out_to_struc(list(args), self.env.act
+        if hasattr(self.env,'np_struc'): action = gym_util.out_to_struc(list(args), self.env.action_dtype)
+        else: action = gym_util.out_to_space(args, self.env.action_space, [0])
+      

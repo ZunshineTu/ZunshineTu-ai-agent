@@ -105,4 +105,6 @@ class GeneralAI(tf.keras.Model):
     def env_step(self, *args): # args = tuple of ndarrays
         if hasattr(self.env,'np_struc'): action = gym_util.out_to_struc(list(args), self.env.action_dtype)
         else: action = gym_util.out_to_space(args, self.env.action_space, [0])
-        obs, reward, terminated, truncated, info = self.env.step(action); done = (terminated
+        obs, reward, terminated, truncated, info = self.env.step(action); done = (terminated or truncated)
+        if self.env_render: self.env.render()
+      

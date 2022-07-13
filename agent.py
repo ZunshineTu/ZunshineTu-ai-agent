@@ -108,4 +108,5 @@ class GeneralAI(tf.keras.Model):
         obs, reward, terminated, truncated, info = self.env.step(action); done = (terminated or truncated)
         if self.env_render: self.env.render()
         if hasattr(self.env,'np_struc'): rtn = gym_util.struc_to_feat(obs)
-        els
+        else: rtn = gym_util.space_to_feat(obs, self.env.observation_space)
+        metrics = info['met

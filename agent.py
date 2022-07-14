@@ -116,4 +116,6 @@ class GeneralAI(tf.keras.Model):
     def checkpoints(self, *args):
         model_files = ""
         for net in self.layers:
-            model_file
+            model_file = self.model_files[net.name]
+            net.save_weights(model_file)
+            

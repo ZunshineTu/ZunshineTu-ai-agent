@@ -110,4 +110,7 @@ class GeneralAI(tf.keras.Model):
         if hasattr(self.env,'np_struc'): rtn = gym_util.struc_to_feat(obs)
         else: rtn = gym_util.space_to_feat(obs, self.env.observation_space)
         metrics = info['metrics'] if 'metrics' in info else [0]
-        rtn += [np.asarray([[reward]], np.float64), np.asarray([[done]], 
+        rtn += [np.asarray([[reward]], np.float64), np.asarray([[done]], bool), np.asarray([metrics], np.float64)]
+        return rtn
+
+    def checkpoints(self, *args

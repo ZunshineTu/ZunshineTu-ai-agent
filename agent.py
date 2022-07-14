@@ -113,4 +113,7 @@ class GeneralAI(tf.keras.Model):
         rtn += [np.asarray([[reward]], np.float64), np.asarray([[done]], bool), np.asarray([metrics], np.float64)]
         return rtn
 
-    def checkpoints(self, *args
+    def checkpoints(self, *args):
+        model_files = ""
+        for net in self.layers:
+            model_file

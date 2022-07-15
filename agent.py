@@ -118,4 +118,5 @@ class GeneralAI(tf.keras.Model):
         for net in self.layers:
             model_file = self.model_files[net.name]
             net.save_weights(model_file)
-            
+            model_files += ' '+model_file.split('/')[-1]
+        print("SAVED{}".form

@@ -123,4 +123,6 @@ class GeneralAI(tf.keras.Model):
         return np.asarray(0, np.int32) # dummy
 
 
-    def reset_sta
+    def reset_states(self, use_img=False):
+        for net in self.layers:
+            if has

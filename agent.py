@@ -119,4 +119,8 @@ class GeneralAI(tf.keras.Model):
             model_file = self.model_files[net.name]
             net.save_weights(model_file)
             model_files += ' '+model_file.split('/')[-1]
-        print("SAVED{}".form
+        print("SAVED{}".format(model_files))
+        return np.asarray(0, np.int32) # dummy
+
+
+    def reset_sta

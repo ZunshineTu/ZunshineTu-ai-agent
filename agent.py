@@ -125,4 +125,8 @@ class GeneralAI(tf.keras.Model):
 
     def reset_states(self, use_img=False):
         for net in self.layers:
-            if has
+            if hasattr(net, 'reset_states'): net.reset_states(use_img=use_img)
+
+
+
+    def PG_actor(self, inputs

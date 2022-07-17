@@ -132,4 +132,4 @@ class GeneralAI(tf.keras.Model):
     def PG_actor(self, inputs, return_goal):
         print("tracing -> GeneralAI PG_actor")
         obs, actions = [None]*self.obs_spec_len, [None]*self.action_spec_len
-        for i in range(self.obs
+        for i in range(self.obs_spec_len): obs[i] = tf.TensorArray(self.obs_spec[i]['dtype'], size=1, dynamic_size=True, inf

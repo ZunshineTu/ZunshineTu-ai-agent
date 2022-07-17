@@ -129,4 +129,6 @@ class GeneralAI(tf.keras.Model):
 
 
 
-    def PG_actor(self, inputs
+    def PG_actor(self, inputs, return_goal):
+        print("tracing -> GeneralAI PG_actor")
+        obs, act

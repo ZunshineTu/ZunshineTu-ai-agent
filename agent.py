@@ -133,4 +133,4 @@ class GeneralAI(tf.keras.Model):
         print("tracing -> GeneralAI PG_actor")
         obs, actions = [None]*self.obs_spec_len, [None]*self.action_spec_len
         for i in range(self.obs_spec_len): obs[i] = tf.TensorArray(self.obs_spec[i]['dtype'], size=1, dynamic_size=True, infer_shape=False, element_shape=self.obs_spec[i]['step_shape'][1:])
-        for i in range(self.action_spec_len): actions[i] = tf.TensorArray(self.action_spec[i][
+        for i in range(self.action_spec_len): actions[i] = tf.TensorArray(self.action_spec[i]['dtype_out'], size=1, dynamic_size=True, infer_shape=False, element_shape=self.act

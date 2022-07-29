@@ -138,4 +138,6 @@ class GeneralAI(tf.keras.Model):
         dones = tf.TensorArray(tf.bool, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
         returns = tf.TensorArray(tf.float64, size=0, dynamic_size=True, infer_shape=False, element_shape=(1,))
 
-        step =
+        step = tf.constant(0)
+        while not inputs['dones'][-1][0]:
+            for i in ra

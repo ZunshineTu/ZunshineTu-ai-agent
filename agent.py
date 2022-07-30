@@ -142,4 +142,5 @@ class GeneralAI(tf.keras.Model):
         while not inputs['dones'][-1][0]:
             for i in range(self.obs_spec_len): obs[i] = obs[i].write(step, inputs['obs'][i][-1])
 
-     
+            action = [None]*self.action_spec_len
+            inputs_step =

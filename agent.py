@@ -147,4 +147,7 @@ class GeneralAI(tf.keras.Model):
             action_logits = self.action(inputs_step)
             for i in range(self.action_spec_len):
                 action_dist = self.action.dist[i](action_logits[i])
-                action[i
+                action[i] = action_dist.sample()
+
+            action_dis = [None]*self.action_spec_len
+            

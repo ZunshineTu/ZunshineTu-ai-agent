@@ -146,4 +146,5 @@ class GeneralAI(tf.keras.Model):
             inputs_step = {'obs':inputs['obs'], 'step':[tf.reshape(step,(1,1))], 'reward_prev':[inputs['rewards']], 'return_goal':[return_goal]}
             action_logits = self.action(inputs_step)
             for i in range(self.action_spec_len):
-          
+                action_dist = self.action.dist[i](action_logits[i])
+                action[i

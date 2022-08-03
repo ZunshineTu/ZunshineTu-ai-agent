@@ -150,4 +150,5 @@ class GeneralAI(tf.keras.Model):
                 action[i] = action_dist.sample()
 
             action_dis = [None]*self.action_spec_len
-            
+            for i in range(self.action_spec_len):
+                actions[i] = actions[i].

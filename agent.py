@@ -151,4 +151,5 @@ class GeneralAI(tf.keras.Model):
 
             action_dis = [None]*self.action_spec_len
             for i in range(self.action_spec_len):
-                actions[i] = actions[i].
+                actions[i] = actions[i].write(step, action[i][0])
+                action_dis[i] = util.discretize(action[i][0], sel

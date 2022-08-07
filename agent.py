@@ -155,3 +155,5 @@ class GeneralAI(tf.keras.Model):
                 action_dis[i] = util.discretize(action[i][0], self.action_spec[i])
 
             np_in = tf.numpy_function(self.env_step, action_dis, self.gym_step_dtypes)
+            for i in range(len(np_in)): np_in[i].set_shape(self.gym_step_shapes[i])
+            

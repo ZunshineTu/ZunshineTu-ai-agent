@@ -159,4 +159,5 @@ class GeneralAI(tf.keras.Model):
             inputs['obs'], inputs['rewards'], inputs['dones'] = np_in[:-3], np_in[-3], np_in[-2]
 
             rewards = rewards.write(step, inputs['rewards'][-1])
-            dones = dones.
+            dones = dones.write(step, inputs['dones'][-1])
+            returns = returns.write(step, [self.flo

@@ -162,4 +162,5 @@ class GeneralAI(tf.keras.Model):
             dones = dones.write(step, inputs['dones'][-1])
             returns = returns.write(step, [self.float64_zero])
             returns_updt = returns.stack()
-            returns_updt 
+            returns_updt = returns_updt + inputs['rewards'][-1]
+            returns = returns.unstack(r

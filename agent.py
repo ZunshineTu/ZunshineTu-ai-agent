@@ -167,4 +167,5 @@ class GeneralAI(tf.keras.Model):
             step += 1
 
         outputs = {}
-        out_obs, out_actio
+        out_obs, out_actions = [None]*self.obs_spec_len, [None]*self.action_spec_len
+        for i in range

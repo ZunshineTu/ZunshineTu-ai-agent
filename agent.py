@@ -163,4 +163,8 @@ class GeneralAI(tf.keras.Model):
             returns = returns.write(step, [self.float64_zero])
             returns_updt = returns.stack()
             returns_updt = returns_updt + inputs['rewards'][-1]
-            returns = returns.unstack(r
+            returns = returns.unstack(returns_updt)
+            step += 1
+
+        outputs = {}
+        out_obs, out_actio

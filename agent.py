@@ -170,4 +170,4 @@ class GeneralAI(tf.keras.Model):
         out_obs, out_actions = [None]*self.obs_spec_len, [None]*self.action_spec_len
         for i in range(self.obs_spec_len): out_obs[i] = obs[i].stack()
         for i in range(self.action_spec_len): out_actions[i] = actions[i].stack()
-        outputs['obs'], outputs[
+        outputs['obs'], outputs['actions'], outputs['rewards'], outputs['dones'], outputs['returns'] = out_obs,

@@ -174,4 +174,6 @@ class GeneralAI(tf.keras.Model):
         return outputs, inputs
 
     def PG_learner_onestep(self, inputs, training=True):
- 
+        print("tracing -> GeneralAI PG_learner_onestep")
+        loss = {}
+        loss_acti

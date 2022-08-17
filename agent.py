@@ -176,4 +176,4 @@ class GeneralAI(tf.keras.Model):
     def PG_learner_onestep(self, inputs, training=True):
         print("tracing -> GeneralAI PG_learner_onestep")
         loss = {}
-        loss_acti
+        loss_actions_lik = tf.TensorArray(self.compute_dtype, size=1, dynamic_size=True, infer_shape=False,

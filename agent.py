@@ -180,4 +180,6 @@ class GeneralAI(tf.keras.Model):
         loss_actions = tf.TensorArray(self.compute_dtype, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
         metric_actlog = tf.TensorArray(self.compute_dtype, size=1, dynamic_size=True, infer_shape=False, element_shape=(2,))
 
-        inputs_rewards = tf.concat([self.rewards_zero
+        inputs_rewards = tf.concat([self.rewards_zero, inputs['rewards']], axis=0)
+        returns = inputs['returns'][0:1]
+        fo

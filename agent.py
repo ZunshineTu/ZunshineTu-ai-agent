@@ -182,4 +182,5 @@ class GeneralAI(tf.keras.Model):
 
         inputs_rewards = tf.concat([self.rewards_zero, inputs['rewards']], axis=0)
         returns = inputs['returns'][0:1]
-        fo
+        for step in tf.range(tf.shape(inputs['dones'])[0]):
+            obs = [None]*sel

@@ -184,4 +184,5 @@ class GeneralAI(tf.keras.Model):
         returns = inputs['returns'][0:1]
         for step in tf.range(tf.shape(inputs['dones'])[0]):
             obs = [None]*self.obs_spec_len
-            for i in range(self.obs_spec_len): obs[i] = input
+            for i in range(self.obs_spec_len): obs[i] = inputs['obs'][i][step:step+1]; obs[i].set_shape(self.obs_spec[i]['step_shape'])
+            act

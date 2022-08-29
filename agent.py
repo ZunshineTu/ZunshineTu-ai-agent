@@ -189,4 +189,5 @@ class GeneralAI(tf.keras.Model):
             for i in range(self.action_spec_len): action[i] = inputs['actions'][i][step:step+1]; action[i].set_shape(self.action_spec[i]['step_shape'])
             returns_calc = tf.squeeze(tf.cast(returns,self.compute_dtype),axis=-1)
 
-            inputs_step = {'obs':obs, 'step':[tf.reshape(step,(1
+            inputs_step = {'obs':obs, 'step':[tf.reshape(step,(1,1))], 'reward_prev':[inputs_rewards[step:step+1]], 'return_goal':[returns]}
+       

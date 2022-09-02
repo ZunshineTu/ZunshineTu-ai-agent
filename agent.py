@@ -192,4 +192,6 @@ class GeneralAI(tf.keras.Model):
             inputs_step = {'obs':obs, 'step':[tf.reshape(step,(1,1))], 'reward_prev':[inputs_rewards[step:step+1]], 'return_goal':[returns]}
             with tf.GradientTape() as tape_action:
                 action_logits = self.action(inputs_step)
-                action_dist = [None]*self.action_spec
+                action_dist = [None]*self.action_spec_len
+                for i in range(self.action_spec_len):
+                    action_di

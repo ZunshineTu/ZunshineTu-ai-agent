@@ -200,4 +200,5 @@ class GeneralAI(tf.keras.Model):
             if loss_action_lik > self.float_eps:
                 gradients = tape_action.gradient(loss_action, self.action.trainable_variables)
                 self.action.optimizer['action'].apply_gradients(zip(gradients, self.action.trainable_variables))
-            loss_actions_lik = loss_actions_lik.
+            loss_actions_lik = loss_actions_lik.write(step, loss_action_lik / self.action_total_size)
+            loss_actions = loss_ac

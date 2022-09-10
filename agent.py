@@ -201,4 +201,5 @@ class GeneralAI(tf.keras.Model):
                 gradients = tape_action.gradient(loss_action, self.action.trainable_variables)
                 self.action.optimizer['action'].apply_gradients(zip(gradients, self.action.trainable_variables))
             loss_actions_lik = loss_actions_lik.write(step, loss_action_lik / self.action_total_size)
-            loss_actions = loss_ac
+            loss_actions = loss_actions.write(step, loss_action)
+            metric_actlog = metric_actlog.write(step

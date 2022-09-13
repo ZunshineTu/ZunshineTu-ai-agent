@@ -204,4 +204,8 @@ class GeneralAI(tf.keras.Model):
             loss_actions = loss_actions.write(step, loss_action)
             metric_actlog = metric_actlog.write(step, action_logits[0][0][0:2])
 
-        loss['action_lik'], loss['action'], loss['actlog'] = loss_actions_lik.concat(), loss_actions.concat(), metric_a
+        loss['action_lik'], loss['action'], loss['actlog'] = loss_actions_lik.concat(), loss_actions.concat(), metric_actlog.stack()
+        return loss
+
+    def PG(self):
+        print("tra

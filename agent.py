@@ -208,4 +208,5 @@ class GeneralAI(tf.keras.Model):
         return loss
 
     def PG(self):
-        print("tra
+        print("tracing -> GeneralAI PG"); tf.print("RUNNING")
+        return_goal, ma, ma_los

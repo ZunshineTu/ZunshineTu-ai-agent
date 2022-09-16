@@ -209,4 +209,5 @@ class GeneralAI(tf.keras.Model):
 
     def PG(self):
         print("tracing -> GeneralAI PG"); tf.print("RUNNING")
-        return_goal, ma, ma_loss, snr_loss = tf.constant([[-self.loss_scale.numpy()]], tf.float64), tf.constant(0
+        return_goal, ma, ma_loss, snr_loss = tf.constant([[-self.loss_scale.numpy()]], tf.float64), tf.constant(0,tf.float64), self.float_maxroot, tf.constant(1,self.compute_dtype)
+        episode

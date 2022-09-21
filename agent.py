@@ -217,4 +217,5 @@ class GeneralAI(tf.keras.Model):
             for i in range(len(np_in)): np_in[i].set_shape(self.gym_step_shapes[i])
             inputs = {'obs':np_in[:-3], 'rewards':np_in[-3], 'dones':np_in[-2]}
 
- 
+            self.reset_states(); outputs, inputs = self.PG_actor(inputs, return_goal)
+            rewards_

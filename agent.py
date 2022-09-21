@@ -218,4 +218,5 @@ class GeneralAI(tf.keras.Model):
             inputs = {'obs':np_in[:-3], 'rewards':np_in[-3], 'dones':np_in[-2]}
 
             self.reset_states(); outputs, inputs = self.PG_actor(inputs, return_goal)
-            rewards_
+            rewards_total = outputs['returns'][0][0]
+            util.stats_update(self.action.stats['rwd

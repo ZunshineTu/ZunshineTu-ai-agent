@@ -214,4 +214,7 @@ class GeneralAI(tf.keras.Model):
         while episode < self.max_episodes:
             tf.autograph.experimental.set_loop_options(parallel_iterations=1)
             np_in = tf.numpy_function(self.env_reset, [tf.constant(0)], self.gym_step_dtypes)
-            for i in range(len(np_in)): np_in[i].set_shape(self.gym_step_shapes[i]
+            for i in range(len(np_in)): np_in[i].set_shape(self.gym_step_shapes[i])
+            inputs = {'obs':np_in[:-3], 'rewards':np_in[-3], 'dones':np_in[-2]}
+
+ 

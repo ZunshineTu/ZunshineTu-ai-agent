@@ -219,4 +219,6 @@ class GeneralAI(tf.keras.Model):
 
             self.reset_states(); outputs, inputs = self.PG_actor(inputs, return_goal)
             rewards_total = outputs['returns'][0][0]
-            util.stats_update(self.action.stats['rwd'], rewards_total); avg, ma, ema, snr, std = util.stats_get(self.action.
+            util.stats_update(self.action.stats['rwd'], rewards_total); avg, ma, ema, snr, std = util.stats_get(self.action.stats['rwd'])
+
+            self.reset_states(); loss = self.PG_learner_onestep(outputs)

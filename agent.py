@@ -223,4 +223,6 @@ class GeneralAI(tf.keras.Model):
 
             self.reset_states(); loss = self.PG_learner_onestep(outputs)
             util.stats_update(self.action.stats['loss'], tf.math.reduce_mean(loss['action_lik'])); avg_loss, ma_loss, ema_loss, snr_loss, std_loss = util.stats_get(self.action.stats['loss'])
-            self.action.optimizer['action'].learning_rate = self.learn_rates['action
+            self.action.optimizer['action'].learning_rate = self.learn_rates['action'] * snr_loss
+
+            log_metrics = [True,True,True,True,True,True,True,True,True,T

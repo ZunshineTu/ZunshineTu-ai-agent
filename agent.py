@@ -229,4 +229,5 @@ class GeneralAI(tf.keras.Model):
             metrics = [log_metrics, episode, ma, tf.math.reduce_sum(outputs['rewards']), outputs['rewards'][-1][0], tf.shape(outputs['rewards'])[0],
                 ma_loss, tf.math.reduce_mean(loss['action_lik']),
                 tf.math.reduce_mean(loss['action']),
-                tf.math.reduce_mean(l
+                tf.math.reduce_mean(loss['actlog'][:,0]), tf.math.reduce_mean(loss['actlog'][:,1]),
+ 

@@ -226,4 +226,4 @@ class GeneralAI(tf.keras.Model):
             self.action.optimizer['action'].learning_rate = self.learn_rates['action'] * snr_loss
 
             log_metrics = [True,True,True,True,True,True,True,True,True,True,True,True,True,True]
-            metrics = [log_metrics, episode, ma, t
+            metrics = [log_metrics, episode, ma, tf.math.reduce_sum(outputs['rewards']), outputs['rewards'][-1][0], tf.shape(outputs['re

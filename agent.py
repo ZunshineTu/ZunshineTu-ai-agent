@@ -230,4 +230,5 @@ class GeneralAI(tf.keras.Model):
                 ma_loss, tf.math.reduce_mean(loss['action_lik']),
                 tf.math.reduce_mean(loss['action']),
                 tf.math.reduce_mean(loss['actlog'][:,0]), tf.math.reduce_mean(loss['actlog'][:,1]),
- 
+            ]
+            dummy = tf.numpy_function(self.metrics_up

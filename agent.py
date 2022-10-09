@@ -234,4 +234,4 @@ class GeneralAI(tf.keras.Model):
             dummy = tf.numpy_function(self.metrics_update, metrics, [tf.int32])
 
             if self.save_model:
-                if 
+                if episode > tf.constant(0) and episode % self.chkpts == tf.constant(0): tf.numpy_function(

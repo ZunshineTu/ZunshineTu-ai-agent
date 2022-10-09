@@ -235,4 +235,11 @@ class GeneralAI(tf.keras.Model):
 
             if self.save_model:
                 if episode > tf.constant(0) and episode % self.chkpts == tf.constant(0): tf.numpy_function(self.checkpoints, [tf.constant(0)], [tf.int32])
-            episode += 
+            episode += 1
+
+
+
+
+def params(): pass
+load_model, save_model, chkpts = False, False, 5000
+max_episodes =

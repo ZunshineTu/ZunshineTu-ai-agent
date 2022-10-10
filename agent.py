@@ -242,4 +242,6 @@ class GeneralAI(tf.keras.Model):
 
 def params(): pass
 load_model, save_model, chkpts = False, False, 5000
-max_episodes =
+max_episodes = 100
+latent_size = 16
+latent_dist = 'd' # 'd' = deterministic, 'c' = categorical, 'mx'

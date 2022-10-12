@@ -245,4 +245,6 @@ load_model, save_model, chkpts = False, False, 5000
 max_episodes = 100
 latent_size = 16
 latent_dist = 'd' # 'd' = deterministic, 'c' = categorical, 'mx' = continuous(mixture)
-mixture_multi = 4 # mixture distribution size,mult
+mixture_multi = 4 # mixture distribution size,multiply num components
+net_lstm = False
+net_attn = {'net':True, 'io':True, 'out':True, 'ar'

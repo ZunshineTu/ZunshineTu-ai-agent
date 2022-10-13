@@ -251,4 +251,4 @@ net_attn = {'net':True, 'io':True, 'out':True, 'ar':True}
 aio_max_latents = 16
 aug_data_step, aug_data_pos = True, True
 
-device_ty
+device_type = 'GPU' # use GPU for large networks (over 8 total net blocks?) or output data (512

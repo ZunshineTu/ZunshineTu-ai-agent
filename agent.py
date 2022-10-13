@@ -247,4 +247,8 @@ latent_size = 16
 latent_dist = 'd' # 'd' = deterministic, 'c' = categorical, 'mx' = continuous(mixture)
 mixture_multi = 4 # mixture distribution size,multiply num components
 net_lstm = False
-net_attn = {'net':True, 'io':True, 'out':True, 'ar'
+net_attn = {'net':True, 'io':True, 'out':True, 'ar':True}
+aio_max_latents = 16
+aug_data_step, aug_data_pos = True, True
+
+device_ty

@@ -256,4 +256,5 @@ device_type = 'CPU'
 
 machine, device, extra = 'dev', 0, ''
 
-trader, env_async, env_async_clock, env_async_speed, env_reconfig, chart_lim = False, False, 0.001, 160
+trader, env_async, env_async_clock, env_async_speed, env_reconfig, chart_lim = False, False, 0.001, 160.0, False, 0.003
+env_name, max_steps, env_render, env_reconfig, env = 'CartPole', 512, Fa

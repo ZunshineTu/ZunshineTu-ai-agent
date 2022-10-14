@@ -256,4 +256,4 @@ device_type = 'CPU'
 
 machine, device, extra = 'dev', 0, ''
 
-trader, env_async
+trader, env_async, env_async_clock, env_async_speed, env_reconfig, chart_lim = False, False, 0.001, 160

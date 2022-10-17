@@ -260,4 +260,7 @@ trader, env_async, env_async_clock, env_async_speed, env_reconfig, chart_lim = F
 env_name, max_steps, env_render, env_reconfig, env = 'CartPole', 512, False, True, gym.make('CartPole-v1', max_episode_steps=500) # (4) float32    ()2 int64    500  475.0
 # env_name, max_steps, env_render, env_reconfig, env = 'LunarLand', 1024, False, True, gym.make('LunarLander-v2') # (8) float32    ()4 int64    1000  200.0
 
-arch = 'PG'; learn_rates = {'action':4e-6} # Policy Gradient agen
+arch = 'PG'; learn_rates = {'action':4e-6} # Policy Gradient agent, PG loss
+
+if __name__ == '__main__':
+    if env_async: import envs_local.async_wrapper

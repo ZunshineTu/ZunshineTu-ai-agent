@@ -263,4 +263,4 @@ env_name, max_steps, env_render, env_reconfig, env = 'CartPole', 512, False, Tru
 arch = 'PG'; learn_rates = {'action':4e-6} # Policy Gradient agent, PG loss
 
 if __name__ == '__main__':
-    if env_async: import envs_local.async_wrapper
+    if env_async: import envs_local.async_wrapper as envaw_; env_name, env = env_name+'-asyn', envaw_.AsyncWrapperEnv(env, env_a

@@ -265,4 +265,5 @@ arch = 'PG'; learn_rates = {'action':4e-6} # Policy Gradient agent, PG loss
 if __name__ == '__main__':
     if env_async: import envs_local.async_wrapper as envaw_; env_name, env = env_name+'-asyn', envaw_.AsyncWrapperEnv(env, env_async_clock, env_async_speed, env_render)
     if env_reconfig: import envs_local.reconfig_wrapper as envrw_; env_name, env = env_name+'-r', envrw_.ReconfigWrapperEnv(env)
-    with tf.device("/device:{}:{}".format(device_type,(device if device_typ
+    with tf.device("/device:{}:{}".format(device_type,(device if device_type=='GPU' else 0))):
+        model = GeneralAI(arch, env, trader, env_render, save_mod

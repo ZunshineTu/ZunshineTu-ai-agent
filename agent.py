@@ -267,4 +267,4 @@ if __name__ == '__main__':
     if env_reconfig: import envs_local.reconfig_wrapper as envrw_; env_name, env = env_name+'-r', envrw_.ReconfigWrapperEnv(env)
     with tf.device("/device:{}:{}".format(device_type,(device if device_type=='GPU' else 0))):
         model = GeneralAI(arch, env, trader, env_render, save_model, chkpts, max_episodes, max_steps, learn_rates, latent_size, latent_dist, mixture_multi, net_lstm, net_attn, aio_max_latents, aug_data_step, aug_data_pos)
-    
+        name = "gym-{}-{}-{}-a{}{}-{}".format(arch, env_name, machine, device, extra, time.strftime("

@@ -273,4 +273,5 @@ if __name__ == '__main__':
         ## load models
         model_files, name_arch = {}, ""
         for net in model.layers:
-            model_name = "{}-{}-a{}".forma
+            model_name = "{}-{}-a{}".format(net.arch_desc, machine, device)
+            model_file 

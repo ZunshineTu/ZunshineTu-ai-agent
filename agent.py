@@ -276,4 +276,5 @@ if __name__ == '__main__':
             model_name = "{}-{}-a{}".format(net.arch_desc, machine, device)
             model_file = "{}/tf-data-models-local/{}.h5".format(curdir, model_name); loaded_model = False
             model_files[net.name] = model_file
-            if (load_mo
+            if (load_model or net.name == 'M') and tf.io.gfile.exists(model_file):
+                net.l

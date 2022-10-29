@@ -274,4 +274,6 @@ if __name__ == '__main__':
         model_files, name_arch = {}, ""
         for net in model.layers:
             model_name = "{}-{}-a{}".format(net.arch_desc, machine, device)
-            model_file = "{}/tf-data-models-local/{}.h5".format(curdir, model_name); loaded_model
+            model_file = "{}/tf-data-models-local/{}.h5".format(curdir, model_name); loaded_model = False
+            model_files[net.name] = model_file
+            if (load_mo

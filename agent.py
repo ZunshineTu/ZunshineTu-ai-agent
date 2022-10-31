@@ -277,4 +277,5 @@ if __name__ == '__main__':
             model_file = "{}/tf-data-models-local/{}.h5".format(curdir, model_name); loaded_model = False
             model_files[net.name] = model_file
             if (load_model or net.name == 'M') and tf.io.gfile.exists(model_file):
-                net.l
+                net.load_weights(model_file, by_name=True, skip_mismatch=True)
+                print("

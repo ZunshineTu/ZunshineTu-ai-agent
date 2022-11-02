@@ -278,4 +278,4 @@ if __name__ == '__main__':
             model_files[net.name] = model_file
             if (load_model or net.name == 'M') and tf.io.gfile.exists(model_file):
                 net.load_weights(model_file, by_name=True, skip_mismatch=True)
-                print("
+                print("LOADED {} weights from {}".format(net.name, model_file)); load

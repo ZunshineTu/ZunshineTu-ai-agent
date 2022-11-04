@@ -279,4 +279,5 @@ if __name__ == '__main__':
             if (load_model or net.name == 'M') and tf.io.gfile.exists(model_file):
                 net.load_weights(model_file, by_name=True, skip_mismatch=True)
                 print("LOADED {} weights from {}".format(net.name, model_file)); loaded_model = True
-            name_opt = "-O{}{}".format(net.opt_spec['type'], ('' if net.opt_spec['schedule_type']=='' else '-S'+net.opt_spec['
+            name_opt = "-O{}{}".format(net.opt_spec['type'], ('' if net.opt_spec['schedule_type']=='' else '-S'+net.opt_spec['schedule_type'])) if hasattr(net, 'opt_spec') else ''
+            nam

@@ -285,4 +285,5 @@ if __name__ == '__main__':
 
 
         ## run
-     
+        print("RUN {}\n{}".format(name, name_arch))
+        arch_run = geta

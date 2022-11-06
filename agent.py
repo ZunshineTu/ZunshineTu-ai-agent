@@ -291,3 +291,8 @@ if __name__ == '__main__':
         arch_run()
         total_time = (time.perf_counter_ns() - t1_start) / 1e9 # seconds
         env.close()
+
+
+        ## metrics
+        metrics_loss = model.metrics_loss
+        for loss_group 

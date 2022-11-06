@@ -289,4 +289,5 @@ if __name__ == '__main__':
         arch_run = getattr(model, arch)
         t1_start = time.perf_counter_ns()
         arch_run()
-     
+        total_time = (time.perf_counter_ns() - t1_start) / 1e9 # seconds
+        env.close()

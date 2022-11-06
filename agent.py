@@ -286,4 +286,7 @@ if __name__ == '__main__':
 
         ## run
         print("RUN {}\n{}".format(name, name_arch))
-        arch_run = geta
+        arch_run = getattr(model, arch)
+        t1_start = time.perf_counter_ns()
+        arch_run()
+     

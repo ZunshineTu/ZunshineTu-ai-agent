@@ -297,4 +297,5 @@ if __name__ == '__main__':
         metrics_loss = model.metrics_loss
         for loss_group in metrics_loss.values():
             for k in loss_group.keys():
-                for j in r
+                for j in range(len(loss_group[k])):
+                    loss_group[k][j] = 0 if loss_group[k][j] ==

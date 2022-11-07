@@ -295,4 +295,6 @@ if __name__ == '__main__':
 
         ## metrics
         metrics_loss = model.metrics_loss
-        for loss_group 
+        for loss_group in metrics_loss.values():
+            for k in loss_group.keys():
+                for j in r

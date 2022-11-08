@@ -298,4 +298,6 @@ if __name__ == '__main__':
         for loss_group in metrics_loss.values():
             for k in loss_group.keys():
                 for j in range(len(loss_group[k])):
-                    loss_group[k][j] = 0 if loss_group[k][j] ==
+                    loss_group[k][j] = 0 if loss_group[k][j] == [] else np.mean(loss_group[k][j])
+
+        total_steps = int(np.nansum(metrics_los

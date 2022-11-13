@@ -304,4 +304,5 @@ if __name__ == '__main__':
         step_time = total_time/total_steps
         learn_rates_txt, attn_txt = "", ""
         for k,v in learn_rates.items(): learn_rates_txt += "  {}:{:.0e}".format(k,v)
-        for k,v in net_attn.items(): attn_txt += " {}".for
+        for k,v in net_attn.items(): attn_txt += " {}".format(k) if v else ''
+        title = "{}    [{}-{}]\n{}\ntime:{}   

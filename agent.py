@@ -305,4 +305,5 @@ if __name__ == '__main__':
         learn_rates_txt, attn_txt = "", ""
         for k,v in learn_rates.items(): learn_rates_txt += "  {}:{:.0e}".format(k,v)
         for k,v in net_attn.items(): attn_txt += " {}".format(k) if v else ''
-        title = "{}    [{}-{}]\n{}\ntime:{}    steps:{}    t/s:{:.8f}    ms:{}".format(name, device_type, tf.keras.backend.floatx(), name_arch, 
+        title = "{}    [{}-{}]\n{}\ntime:{}    steps:{}    t/s:{:.8f}    ms:{}".format(name, device_type, tf.keras.backend.floatx(), name_arch, util.print_time(total_time), total_steps, step_time, max_steps)
+        title += "     |   

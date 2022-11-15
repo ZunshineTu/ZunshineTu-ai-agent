@@ -307,4 +307,5 @@ if __name__ == '__main__':
         for k,v in net_attn.items(): attn_txt += " {}".format(k) if v else ''
         title = "{}    [{}-{}]\n{}\ntime:{}    steps:{}    t/s:{:.8f}    ms:{}".format(name, device_type, tf.keras.backend.floatx(), name_arch, util.print_time(total_time), total_steps, step_time, max_steps)
         title += "     |     attn:{}    al:{}".format(attn_txt, aio_max_latents)
-        title += "     |     a-clk:{}    a-spd:{}    aug:{}{}".format(env_async_clock, env_async_speed, ('S' if aug
+        title += "     |     a-clk:{}    a-spd:{}    aug:{}{}".format(env_async_clock, env_async_speed, ('S' if aug_data_step else ''), ('P' if aug_data_pos else ''))
+        title += "     |   {

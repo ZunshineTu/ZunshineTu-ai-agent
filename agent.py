@@ -311,4 +311,4 @@ if __name__ == '__main__':
         title += "     |   {}".format(learn_rates_txt); print(title)
 
         import matplotlib as mpl
-        mpl.rcParams['axes.prop_cycle'] = mpl.cycler(color=['blue','lightblue',
+        mpl.rcParams['axes.prop_cycle'] = mpl.cycler(color=['blue','lightblue','green','lime','red','lavender','turquoise','cyan','magenta','salmon','yellow',

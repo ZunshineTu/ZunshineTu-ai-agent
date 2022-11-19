@@ -314,4 +314,6 @@ if __name__ == '__main__':
         mpl.rcParams['axes.prop_cycle'] = mpl.cycler(color=['blue','lightblue','green','lime','red','lavender','turquoise','cyan','magenta','salmon','yellow','gold','black','brown','purple','pink','orange','teal','coral','darkgreen','tan'])
         plt.figure(num=name, figsize=(34, 18), tight_layout=True)
         xrng, i, vplts = np.arange(0, max_episodes, 1), 0, 0
-        for loss_group_name in metrics_loss.keys(): vplt
+        for loss_group_name in metrics_loss.keys(): vplts += int(loss_group_name[0])
+
+        for loss_group_name, loss_gr

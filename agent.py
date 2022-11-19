@@ -316,4 +316,5 @@ if __name__ == '__main__':
         xrng, i, vplts = np.arange(0, max_episodes, 1), 0, 0
         for loss_group_name in metrics_loss.keys(): vplts += int(loss_group_name[0])
 
-        for loss_group_name, loss_gr
+        for loss_group_name, loss_group in metrics_loss.items():
+            rows, col, m_min, m_max, c

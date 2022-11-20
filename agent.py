@@ -317,4 +317,4 @@ if __name__ == '__main__':
         for loss_group_name in metrics_loss.keys(): vplts += int(loss_group_name[0])
 
         for loss_group_name, loss_group in metrics_loss.items():
-            rows, col, m_min, m_max, c
+            rows, col, m_min, m_max, combine, yscale = int(loss_group_name[0]), 0, [0]*len(loss_group), [0]*len(loss_grou

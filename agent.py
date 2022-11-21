@@ -320,4 +320,5 @@ if __name__ == '__main__':
             rows, col, m_min, m_max, combine, yscale = int(loss_group_name[0]), 0, [0]*len(loss_group), [0]*len(loss_group), loss_group_name.endswith('*'), ('log' if loss_group_name[1] == '~' else 'linear')
             if combine: spg = plt.subplot2grid((vplts, 1), (i, 0), rowspan=rows, xlim=(0, max_episodes), yscale=yscale); plt.grid(axis='y',alpha=0.3)
             for metric_name, metric in loss_group.items():
-                metric = np.asarray(metric, np.float64); m_min[col], m_max[col] = np.nanquantile(metric, chart_lim), 
+                metric = np.asarray(metric, np.float64); m_min[col], m_max[col] = np.nanquantile(metric, chart_lim), np.nanquantile(metric, 1.0-chart_lim)
+                if not combine: spg =

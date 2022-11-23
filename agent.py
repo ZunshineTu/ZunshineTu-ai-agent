@@ -321,4 +321,4 @@ if __name__ == '__main__':
             if combine: spg = plt.subplot2grid((vplts, 1), (i, 0), rowspan=rows, xlim=(0, max_episodes), yscale=yscale); plt.grid(axis='y',alpha=0.3)
             for metric_name, metric in loss_group.items():
                 metric = np.asarray(metric, np.float64); m_min[col], m_max[col] = np.nanquantile(metric, chart_lim), np.nanquantile(metric, 1.0-chart_lim)
-                if not combine: spg =
+                if not combine: spg = plt.subplot2grid((vplts, len(loss_group)), (i, col), rowspan=rows, xl

@@ -325,4 +325,7 @@ if __name__ == '__main__':
                 if metric_name.startswith('-'): plt.plot(xrng, metric, alpha=1.0, label=metric_name)
                 else: plt.plot(xrng, util.ewma(metric, window=max_episodes//10+2), alpha=1.0, label=metric_name); plt.plot(xrng, metric, alpha=0.3)
                 plt.ylabel('value'); plt.legend(loc='upper left'); col+=1
-            if combine: spg.set_ylim(np.min(m_min),
+            if combine: spg.set_ylim(np.min(m_min), np.max(m_max))
+            if i == 0: plt.title(title)
+            i+=rows
+     

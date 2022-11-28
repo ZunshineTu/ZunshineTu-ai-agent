@@ -324,4 +324,5 @@ if __name__ == '__main__':
                 if not combine: spg = plt.subplot2grid((vplts, len(loss_group)), (i, col), rowspan=rows, xlim=(0, max_episodes), ylim=(m_min[col], m_max[col]), yscale=yscale); plt.grid(axis='y',alpha=0.3,which='both')
                 if metric_name.startswith('-'): plt.plot(xrng, metric, alpha=1.0, label=metric_name)
                 else: plt.plot(xrng, util.ewma(metric, window=max_episodes//10+2), alpha=1.0, label=metric_name); plt.plot(xrng, metric, alpha=0.3)
-                plt.ylabel('value'); 
+                plt.ylabel('value'); plt.legend(loc='upper left'); col+=1
+            if combine: spg.set_ylim(np.min(m_min),

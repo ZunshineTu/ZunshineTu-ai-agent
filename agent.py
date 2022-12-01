@@ -328,4 +328,6 @@ if __name__ == '__main__':
             if combine: spg.set_ylim(np.min(m_min), np.max(m_max))
             if i == 0: plt.title(title)
             i+=rows
-     
+        out_file = "output/{}.png".format(name)
+        plt.savefig(out_file)
+      

@@ -330,4 +330,4 @@ if __name__ == '__main__':
             i+=rows
         out_file = "output/{}.png".format(name)
         plt.savefig(out_file)
-      
+        print("SAVED {}   (run \033[94mpython serve.py\033[00m to access webserv

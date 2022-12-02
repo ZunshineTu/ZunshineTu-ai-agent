@@ -334,4 +334,6 @@ if __name__ == '__main__':
 
 
         ## save models
-        if save_model
+        if save_model:
+            for net in model.layers:
+                model_file = model.model_

@@ -336,4 +336,6 @@ if __name__ == '__main__':
         ## save models
         if save_model:
             for net in model.layers:
-                model_file = model.model_
+                model_file = model.model_files[net.name]
+                net.save_weights(model_file)
+                print("SAVED

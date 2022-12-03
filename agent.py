@@ -338,4 +338,4 @@ if __name__ == '__main__':
             for net in model.layers:
                 model_file = model.model_files[net.name]
                 net.save_weights(model_file)
-                print("SAVED
+                print("SAVED {} weights to {}".format(net.name, model_file))

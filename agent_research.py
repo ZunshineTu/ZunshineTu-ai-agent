@@ -197,3 +197,95 @@ class GeneralAI(tf.keras.Model):
         if platform == "win32": keyboard.add_hotkey('ctrl+alt+k', self.on_stop, suppress=True) # TODO figure out linux/Docker version of this that works
         self.metrics_spec()
         # TF bug that wont set graph options with tf.function decorator inside a class
+        self.reset_states = tf.function(self.reset_states, experimental_autograph_options=tf.autograph.experimental.Feature.LISTS)
+        self.reset_states()
+        arch_run = getattr(self, arch); arch_run = tf.function(arch_run, experimental_autograph_options=tf.autograph.experimental.Feature.LISTS); setattr(self, arch, arch_run)
+
+
+    def metrics_spec(self):
+        metrics_loss = OrderedDict()
+        metrics_loss['2rewards*'] = {'-rewards_ma':np.float64, '-rewards_total+':np.float64, 'rewards_final=':np.float64}
+        metrics_loss['1steps'] = {'steps+':np.int64}
+        if self.arch == 'PG':
+            metrics_loss['1~nets*'] = {'-loss_ma':np.float64, '-loss_action':np.float64}
+            # metrics_loss['1extras'] = {'returns':np.float64}
+            metrics_loss['1extrasAR'] = {'loss_action_returns':np.float64}
+            metrics_loss['1extras2*'] = {'actlog0':np.float64, 'actlog1':np.float64}
+            # metrics_loss['1extras2*'] = {'-actlog0':np.float64, '-actlog1':np.float64, '-actlog2':np.float64, '-actlog3':np.float64}
+            # # metrics_loss['1extras1*'] = {'-ma':np.float64, '-ema':np.float64}
+            # metrics_loss['1extras1*'] = {'-snr_loss':np.float64, '-std_loss':np.float64}
+            # metrics_loss['1extras5'] = {'-snr_rtn':np.float64}
+            # metrics_loss['1~extra3'] = {'-learn_rate':np.float64}
+            # metrics_loss['1extra4'] = {'loss_meta':np.float64}
+        if self.arch == 'AC':
+            metrics_loss['1netsR'] = {'loss_action_lik':np.float64, 'loss_value_rep':np.float64}
+            metrics_loss['1nets'] = {'loss_action':np.float64, 'loss_value':np.float64}
+            # metrics_loss['1extras*'] = {'returns':np.float64, 'advantages':np.float64}
+            metrics_loss['1extras2*'] = {'actlog0':np.float64, 'actlog1':np.float64}
+        if self.arch == 'MU':
+            metrics_loss['1~nets*'] = {'-loss_ma':np.float64, '-loss_action':np.float64}
+            # metrics_loss['1extrasAR'] = {'loss_action_returns':np.float64}
+            metrics_loss['1~extras'] = {'loss_trans':np.float64}
+            metrics_loss['1~extras1'] = {'loss_value':np.float64}
+            # metrics_loss['1~extras3'] = {'loss_gen':np.float64}
+            # metrics_loss['1extras4'] = {'loss_act':np.float64}
+            # metrics_loss['1extras2*'] = {'actlog0':np.float64, 'actlog1':np.float64}
+            # metrics_loss['1extras1*'] = {'-snr_loss':np.float64, '-std_loss':np.float64}
+            # metrics_loss['1~extra3'] = {'-learn_rate':np.float64}
+            # metrics_loss['1~extra3'] = {'-lr_rep_action':np.float64}
+            # metrics_loss['1~extra4'] = {'-lr_rep_trans':np.float64}
+            # metrics_loss['1~extra5'] = {'-lr_action':np.float64}
+            # metrics_loss['1~extra6'] = {'-lr_trans':np.float64}
+        if self.trader:
+            metrics_loss['2rewards*'] = {'equity_final=':np.float64, '-draw_total':np.float64}
+            metrics_loss['1trader_sim_time'] = {'sim_time_secs':np.float64}
+            # metrics_loss['1trader_draws'] = {'-drawdown_total':np.float64}
+
+        for loss_group in metrics_loss.values():
+            for k in loss_group.keys():
+                if k.endswith('=') or k.endswith('+'): loss_group[k] = [0 for i in range(self.max_episodes)]
+                else: loss_group[k] = [[] for i in range(self.max_episodes)]
+        self.metrics_loss = metrics_loss
+
+    def metrics_update(self, *args):
+        args = list(args)
+        # for i in range(1,len(args)): args[i] = args[i].item()
+        log_metrics, episode, idx = args[0], args[1], 2
+        for loss_group in self.metrics_loss.values():
+            for k in loss_group.keys():
+                if log_metrics[idx-2]:
+                    if k.endswith('='): loss_group[k][episode] = args[idx]
+                    elif k.endswith('+'): loss_group[k][episode] += args[idx]
+                    else: loss_group[k][episode] += [args[idx]]
+                idx += 1
+        return np.asarray(0, np.int32) # dummy
+
+
+    def env_reset(self, dummy):
+        obs, info = self.env.reset(); reward, done = 0.0, False
+        if self.env_render: self.env.render()
+        if hasattr(self.env,'np_struc'): rtn = gym_util.struc_to_feat(obs)
+        else: rtn = gym_util.space_to_feat(obs, self.env.observation_space)
+        metrics = info['metrics'] if 'metrics' in info else [0]
+        rtn += [np.asarray([[reward]], np.float64), np.asarray([[done]], bool), np.asarray([metrics], np.float64)]
+        return rtn
+    def env_step(self, *args): # args = tuple of ndarrays
+        if hasattr(self.env,'np_struc'): action = gym_util.out_to_struc(list(args), self.env.action_dtype)
+        else: action = gym_util.out_to_space(args, self.env.action_space, [0])
+        obs, reward, terminated, truncated, info = self.env.step(action); done = (terminated or truncated)
+        if self.env_render: self.env.render()
+        if hasattr(self.env,'np_struc'): rtn = gym_util.struc_to_feat(obs)
+        else: rtn = gym_util.space_to_feat(obs, self.env.observation_space)
+        metrics = info['metrics'] if 'metrics' in info else [0]
+        rtn += [np.asarray([[reward]], np.float64), np.asarray([[done]], bool), np.asarray([metrics], np.float64)]
+        return rtn
+
+    def check_stop(self, *args):
+        # if keyboard.is_pressed('ctrl+alt+k'): return np.asarray(True, bool)
+        if self.stop: self.stopped_episode = args[0].item(); return np.asarray(True, bool)
+        if self.pause_episodes:
+            print('PAUSED')
+            while True:
+                if keyboard.is_pressed('ctrl+alt+space'): break
+                time.sleep(0.1)
+        return np.asarray(False, bool)

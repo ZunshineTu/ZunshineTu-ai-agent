@@ -289,3 +289,71 @@ class GeneralAI(tf.keras.Model):
                 if keyboard.is_pressed('ctrl+alt+space'): break
                 time.sleep(0.1)
         return np.asarray(False, bool)
+    def on_stop(self):
+        keyboard.unhook_all_hotkeys()
+        print('STOPPING'); self.stop = True
+
+    def checkpoints(self, *args):
+        model_files = ""
+        for net in self.layers:
+            model_file = self.model_files[net.name]
+            net.save_weights(model_file)
+            model_files += ' '+model_file.split('/')[-1]
+        print("SAVED{}".format(model_files))
+        return np.asarray(0, np.int32) # dummy
+
+    # TODO use ZMQ for remote messaging, latent pooling
+    def transact_latents(self, *args):
+        # args[0].shape
+        return [np.asarray([0,1,2], np.float64), np.asarray([2,1,0], np.float64)]
+
+
+    def reset_states(self, use_img=False):
+        for net in self.layers:
+            if hasattr(net, 'reset_states'): net.reset_states(use_img=use_img)
+
+
+
+    def PG_actor(self, inputs, return_goal):
+        print("tracing -> GeneralAI PG_actor")
+        obs, actions = [None]*self.obs_spec_len, [None]*self.action_spec_len
+        for i in range(self.obs_spec_len): obs[i] = tf.TensorArray(self.obs_spec[i]['dtype'], size=1, dynamic_size=True, infer_shape=False, element_shape=self.obs_spec[i]['step_shape'][1:])
+        for i in range(self.action_spec_len): actions[i] = tf.TensorArray(self.action_spec[i]['dtype_out'], size=1, dynamic_size=True, infer_shape=False, element_shape=self.action_spec[i]['step_shape'][1:])
+        rewards = tf.TensorArray(tf.float64, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
+        dones = tf.TensorArray(tf.bool, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
+        returns = tf.TensorArray(tf.float64, size=0, dynamic_size=True, infer_shape=False, element_shape=(1,))
+
+        step = tf.constant(0)
+        # while step < self.max_steps and not inputs['dones'][-1][0]:
+        while not inputs['dones'][-1][0]:
+            # tf.autograph.experimental.set_loop_options(parallel_iterations=1)
+            # tf.autograph.experimental.set_loop_options(shape_invariants=[(inputs['obs'], [tf.TensorShape([None,None])]), (inputs['rewards'], tf.TensorShape([None,None])), (inputs['dones'], tf.TensorShape([None,None]))])
+            # tf.autograph.experimental.set_loop_options(shape_invariants=[(outputs['rewards'], [None,1]), (outputs['dones'], [None,1]), (outputs['returns'], [None,1])])
+            for i in range(self.obs_spec_len): obs[i] = obs[i].write(step, inputs['obs'][i][-1])
+
+            action = [None]*self.action_spec_len
+            # for i in range(self.action_spec_len):
+            #     action[i] = tf.random.uniform((self.action_spec[i]['step_shape']), minval=self.action_spec[i]['min'], maxval=self.action_spec[i]['max'], dtype=self.action_spec[i]['dtype_out'])
+            inputs_step = {'obs':inputs['obs'], 'step':[tf.reshape(step,(1,1))], 'reward_prev':[inputs['rewards']], 'return_goal':[return_goal]}
+            # inputs_step = {'obs':[inputs['obs'][0]], 'step':[tf.reshape(step,(1,1))], 'reward_prev':[inputs['rewards']], 'return_goal':[return_goal]} # PG shkspr img tests
+            # inputs_img = {'obs':[inputs['obs'][1]], 'step':[tf.reshape(step+1,(1,1))], 'reward_prev':[inputs['rewards']], 'return_goal':[return_goal]}
+            # self.action.reset_states(use_img=True)
+            # action_logits = self.action(inputs_step, use_img=True)
+            # action_logits = self.action(inputs_img, use_img=True)
+            # action_logits = self.action(inputs_step, use_img=True, store_real=True)
+            action_logits = self.action(inputs_step)
+            action_dist = [None]*self.action_spec_len
+            for i in range(self.action_spec_len):
+                # action_logits[i] = tf.constant(np.zeros(action_logits[i].shape),self.compute_dtype) # random actions for categorical
+                action_dist[i] = self.action.dist[i](action_logits[i])
+                action[i] = action_dist[i].sample()
+
+            action_dis = [None]*self.action_spec_len
+            for i in range(self.action_spec_len):
+                actions[i] = actions[i].write(step, action[i][0])
+                action_dis[i] = util.discretize(action[i][0], self.action_spec[i])
+
+            np_in = tf.numpy_function(self.env_step, action_dis, self.gym_step_dtypes)
+            for i in range(len(np_in)): np_in[i].set_shape(self.gym_step_shapes[i])
+            # inputs = {'obs':np_in[:-2], 'rewards':np_in[-2], 'dones':np_in[-1]}
+            inputs['obs'], inputs['rewards'], inputs['dones'] = np_in[:-3], np_in[-3], np_in[-2]

@@ -357,3 +357,100 @@ class GeneralAI(tf.keras.Model):
             for i in range(len(np_in)): np_in[i].set_shape(self.gym_step_shapes[i])
             # inputs = {'obs':np_in[:-2], 'rewards':np_in[-2], 'dones':np_in[-1]}
             inputs['obs'], inputs['rewards'], inputs['dones'] = np_in[:-3], np_in[-3], np_in[-2]
+
+            rewards = rewards.write(step, inputs['rewards'][-1])
+            dones = dones.write(step, inputs['dones'][-1])
+            returns = returns.write(step, [self.float64_zero])
+            returns_updt = returns.stack()
+            returns_updt = returns_updt + inputs['rewards'][-1]
+            returns = returns.unstack(returns_updt)
+
+            # return_goal -= inputs['rewards']
+            step += 1
+
+        outputs = {}
+        out_obs, out_actions = [None]*self.obs_spec_len, [None]*self.action_spec_len
+        for i in range(self.obs_spec_len): out_obs[i] = obs[i].stack()
+        for i in range(self.action_spec_len): out_actions[i] = actions[i].stack()
+        outputs['obs'], outputs['actions'], outputs['rewards'], outputs['dones'], outputs['returns'] = out_obs, out_actions, rewards.stack(), dones.stack(), returns.stack()
+        return outputs, inputs
+
+    def PG_learner_onestep(self, inputs, training=True):
+        print("tracing -> GeneralAI PG_learner_onestep")
+        loss = {}
+        loss_actions_lik = tf.TensorArray(self.compute_dtype, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
+        loss_actions = tf.TensorArray(self.compute_dtype, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
+        metric_actlog = tf.TensorArray(self.compute_dtype, size=1, dynamic_size=True, infer_shape=False, element_shape=(2,))
+
+        inputs_rewards = tf.concat([self.rewards_zero, inputs['rewards']], axis=0)
+        returns = inputs['returns'][0:1]; returns_calc = tf.squeeze(tf.cast(returns,self.compute_dtype)); returns_calc_orig = returns_calc # _loss-final
+        avg_rtns, ma_rtns, ema_rtns, snr_rtns, std_rtns = util.stats_get(self.action.stats['rwd']); ema_rtns = tf.cast(ema_rtns,self.compute_dtype)
+        returns_calc = returns_calc - ema_rtns # _rtns-ema # ma_rtns, avg_rtns
+        # returns_calc = util.symlog(returns_calc) # _rtns-sym
+        # returns_calc = returns_calc - util.symlog(ema_rtns) # _rtns-emaSL
+        # returns_calc = snr_rtns # _rtns-snrO
+        # returns_calc = returns_calc - (ema_rtns / (std_rtns+self.float_eps)) # _rtns-emaS
+        # returns_calc = returns_calc * snr_rtns**3 # _rtns-snr3 # std_rtns
+        # if returns_calc < 0.0: returns_calc = tf.constant(0,self.compute_dtype) # _rtns-emaC (needs _rtns-ema)
+        # returns_calc = tf.math.abs(returns_calc - ema_rtns) # _rtns-emaA
+        # returns_calc = returns_calc if returns_calc > self.float_eps else self.float_eps # _rtns-emaP
+        # returns_calc = tf.constant(1,self.compute_dtype) if returns_calc > 0 else tf.constant(-1,self.compute_dtype) # _rtns-emaB
+
+        # inputs['returns'] = util.symlog(inputs['returns']) # _rtnsSL
+        for step in tf.range(tf.shape(inputs['dones'])[0]):
+            obs = [None]*self.obs_spec_len
+            for i in range(self.obs_spec_len): obs[i] = inputs['obs'][i][step:step+1]; obs[i].set_shape(self.obs_spec[i]['step_shape'])
+            action = [None]*self.action_spec_len
+            for i in range(self.action_spec_len): action[i] = inputs['actions'][i][step:step+1]; action[i].set_shape(self.action_spec[i]['step_shape'])
+            # returns = inputs['returns'][step:step+1]; returns_calc = tf.squeeze(tf.cast(returns,self.compute_dtype)); returns_calc_orig = returns_calc # _loss-finalN
+            # returns_step = inputs['returns'][step:step+1]; returns_step_calc = tf.squeeze(tf.cast(returns_step,self.compute_dtype)) # _loss-rtnsI
+            reward_calc = tf.squeeze(tf.cast(inputs['rewards'][step],self.compute_dtype))
+            # if returns_calc < 30.0: returns_calc = tf.constant(0,self.compute_dtype) # _sparse
+            # if returns_calc < 30.0: returns_calc = returns_calc / 30.0 # _clipL
+            # if returns_calc > 170.0: returns_calc = (returns_calc - 170.0) / 30.0 + 170.0 # _clipH
+
+            inputs_step = {'obs':obs, 'step':[tf.reshape(step,(1,1))], 'reward_prev':[inputs_rewards[step:step+1]], 'return_goal':[returns]}
+            # inputs_step = {'obs':[obs[0]], 'step':[tf.reshape(step,(1,1))], 'reward_prev':[inputs_rewards[step:step+1]], 'return_goal':[returns]} # PG shkspr img tests
+            # inputs_img = {'obs':[obs[1]], 'step':[tf.reshape(step+1,(1,1))], 'reward_prev':[inputs_rewards[step:step+1]], 'return_goal':[returns]}
+            # self.action.reset_states(use_img=True)
+            # action_logits = self.action(inputs_step, use_img=True)
+            # action_logits = self.action(inputs_img, use_img=True)
+            with tf.GradientTape() as tape_action:
+                # action_logits = self.action(inputs_step, use_img=True, store_real=True)
+                action_logits = self.action(inputs_step)
+                action_dist = [None]*self.action_spec_len
+                for i in range(self.action_spec_len):
+                    # if self.action_spec[i]['dist_type'] == 'c': # _logit-norm
+                    #     action_logits_norm = tf.norm(action_logits[i], ord=2, axis=-1, keepdims=True) + self.float_eps
+                    #     action_logits[i] = tf.math.divide(action_logits[i], action_logits_norm) # / tf.constant(0.01,self.compute_dtype)
+                    action_dist[i] = self.action.dist[i](action_logits[i])
+                # loss_action = util.loss_PG(action_dist, action, returns)
+                loss_action_lik = util.loss_likelihood(action_dist, action)
+                # loss_action_lik = util.loss_likelihood(action_dist, obs); loss_action = loss_action_lik # _loss-direct
+                # loss_action_lik = loss_action_lik - self.float_maxroot # _lSmr # causes NaN/inf
+                # loss_action_lik = loss_action_lik - self.float_eps_max # _lSem
+                # loss_action_lik = loss_action_lik - self.loss_scale # _lSls
+                loss_action = loss_action_lik * returns_calc
+                # loss_action = loss_action_lik - returns_calc # _rtnsS
+                # loss_action = loss_action_lik * returns_calc - returns_calc # _rtnsMS
+                # loss_action = loss_action_lik * (returns_calc + reward_calc) # _rtnsR
+                # loss_action = loss_action_lik * reward_calc # _loss-rwd
+                # loss_action = loss_action_lik # _loss-udRL
+                # loss_action = loss_action_lik * (returns_calc + 1) # _rtnsP1
+                # loss_action = loss_action * returns_step_calc # _loss-rtnsI
+                # loss_action = loss_action * reward_calc # _loss-rwdO
+                loss_action = loss_action + loss_action_lik * reward_calc # _loss-rwdG
+                # loss_action = loss_action - returns_calc # _loss-rtns # no gradients
+                # loss_action = loss_action - reward_calc # _loss-rwdS # no gradients
+                # loss_action = loss_action - ema_rtns # _rtnsEM _loss-rtnsS # no gradients
+                # loss_action = loss_action + util.loss_entropy(action_dist, 1e-0) # , 1e-3 # _rtnsE _loss-ent
+                for i in range(self.action_spec_len): loss_action = loss_action + action_dist[i].params_loss(action_logits[i]) # * tf.math.abs(returns_calc + reward_calc) # _loss-logits
+                # loss_action = self.action.optimizer['action'].get_scaled_loss(loss_action)
+                # loss_action = loss_action * self.loss_scale # _loss-scale
+            if loss_action_lik > self.float_eps: # _grad-lim-eps
+            # if reward_calc > tf.constant(0,self.compute_dtype): # _grad-lim-rwd
+            # if tf.math.abs(reward_calc) > self.float_eps and loss_action_lik > self.float_eps:
+                gradients = tape_action.gradient(loss_action, self.action.trainable_variables)
+                # gradients = self.action.optimizer['action'].get_unscaled_gradients(gradients)
+                # for i in range(len(gradients)): gradients[i] = gradients[i] / self.loss_scale # _loss-scale
+                self.action.optimizer['action'].apply_gradients(zip(gradients, self.action.trainable_variables))

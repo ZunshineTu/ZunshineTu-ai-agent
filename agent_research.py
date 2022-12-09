@@ -116,3 +116,84 @@ class GeneralAI(tf.keras.Model):
             self.trans = nets.ArchGen('TN', self.latent_zero, opt_spec, stats_spec, latent_spec_trans, latent_spec, net_blocks=4, net_lstm=net_lstm, net_attn=net_attn, num_heads=4, memory_size=max_steps, latent_multi=3); outputs = self.trans(self.latent_zero)
             self.trans.optimizer_weights = util.optimizer_build(self.trans.optimizer['trans'], self.trans.trainable_variables)
             util.net_build(self.trans, self.initializer)
+
+            inputs_cond = {'obs':self.latent_zero, 'actions':self.action_zero_out}
+            opt_spec = [{'name':'value', 'type':'a', 'schedule_type':'', 'learn_rate':self.learn_rates['value'], 'float_eps':self.float_eps}]; stats_spec = [{'name':'loss', 'b1':0.99, 'b2':0.99, 'dtype':compute_dtype}]
+            val_dist_type = ('mx',8) if value_cont else ('d',1)
+            value_spec = [{'space_name':'value', 'name':'', 'dtype':tf.float64, 'dtype_out':compute_dtype, 'dist_type':val_dist_type[0], 'num_components':val_dist_type[1], 'event_shape':(1,), 'event_size':1, 'step_shape':tf.TensorShape((1,1))}]
+            value_spec += [{'space_name':'reward', 'name':'', 'dtype':tf.float64, 'dtype_out':compute_dtype, 'dist_type':val_dist_type[0], 'num_components':val_dist_type[1], 'event_shape':(1,), 'event_size':1, 'step_shape':tf.TensorShape((1,1))}]
+            value_spec += [{'space_name':'done', 'name':'', 'dtype':tf.bool, 'dtype_out':compute_dtype, 'dist_type':'c', 'num_components':2, 'event_shape':(1,), 'event_size':1, 'step_shape':tf.TensorShape((1,1))}]
+            # self.value = nets.ArchGen('VN', self.latent_zero, opt_spec, stats_spec, value_spec, latent_spec, net_blocks=2, net_lstm=net_lstm, net_attn=net_attn, num_heads=4, memory_size=max_steps); outputs = self.value(self.latent_zero)
+            self.value = nets.ArchFull('VL', inputs_cond, opt_spec, stats_spec, self.action_spec, value_spec, latent_spec, obs_latent=True, net_blocks=4, net_lstm=net_lstm, net_attn=net_attn, num_heads=4, memory_size=max_steps, latent_multi=3, aug_data_pos=aug_data_pos); outputs = self.value(inputs_cond) # _val-cond
+            self.value.optimizer_weights = util.optimizer_build(self.value.optimizer['value'], self.value.trainable_variables)
+            util.net_build(self.value, self.initializer)
+
+            # opt_spec = [{'name':'gen', 'type':'a', 'schedule_type':'', 'learn_rate':self.learn_rates['gen'], 'float_eps':self.float_eps}]; stats_spec = [{'name':'loss', 'b1':0.99, 'b2':0.99, 'dtype':compute_dtype}]
+            # # gen_spec = self.obs_spec
+            # gen_spec = [{'space_name':'gen', 'name':'', 'dtype':compute_dtype, 'dtype_out':compute_dtype, 'dist_type':'d', 'num_components':1, 'event_shape':(1,), 'event_size':1, 'step_shape':tf.TensorShape((1,1))}]
+            # self.gen_spec_len = len(gen_spec)
+            # self.gen = nets.ArchGen('GN', self.latent_zero, opt_spec, stats_spec, gen_spec, latent_spec, net_blocks=2, net_lstm=net_lstm, net_attn=net_attn, num_heads=4, memory_size=None, latent_multi=1); outputs = self.gen(self.latent_zero)
+            # self.gen.optimizer_weights = util.optimizer_build(self.gen.optimizer['gen'], self.gen.trainable_variables)
+            # util.net_build(self.gen, self.initializer)
+
+            # opt_spec = [{'name':'act', 'type':'a', 'schedule_type':'', 'learn_rate':self.learn_rates['act'], 'float_eps':self.float_eps}]; stats_spec = [{'name':'loss', 'b1':0.99, 'b2':0.99, 'dtype':compute_dtype}, {'name':'rwd', 'b1':0.99, 'b2':0.99, 'dtype':tf.float64}]
+            # # act_spec = [{'space_name':'return_goal', 'name':'', 'event_shape':(1,), 'event_size':1, 'channels':1, 'step_shape':tf.TensorShape((1,1)), 'num_latents':1}]; inputs_cond = {'obs':self.latent_zero, 'return_goal':[self.rewards_zero]}
+            # # self.act = nets.ArchFull('ACT', inputs_cond, opt_spec, stats_spec, act_spec, self.action_spec, latent_spec, obs_latent=True, net_blocks=3, net_lstm=net_lstm, net_attn=net_attn, num_heads=4, memory_size=max_steps, aug_data_pos=aug_data_pos); outputs = self.act(inputs_cond)
+            # self.act = nets.ArchGen('ACT', self.latent_zero, opt_spec, stats_spec, self.action_spec, latent_spec, net_blocks=3, net_lstm=net_lstm, net_attn=net_attn, num_heads=4, memory_size=max_steps); outputs = self.act(self.latent_zero)
+            # self.act.optimizer_weights = util.optimizer_build(self.act.optimizer['act'], self.act.trainable_variables)
+            # util.net_build(self.act, self.initializer)
+
+            # opt_spec = [{'name':'pool', 'type':'a', 'schedule_type':'', 'learn_rate':self.learn_rates['pool'], 'float_eps':self.float_eps}]; stats_spec = [{'name':'loss', 'b1':0.99, 'b2':0.99, 'dtype':compute_dtype}]
+            # self.pool = nets.ArchNet('LP', self.latent_zero, opt_spec, stats_spec, latent_spec, net_blocks=2, net_lstm=net_lstm, net_attn={'net':True, 'io':True, 'out':False, 'ar':True}, num_heads=4, memory_size=max_steps, mem_img_size=self.mem_img_size); outputs = self.pool(self.latent_zero)
+            # self.pool.optimizer_weights = util.optimizer_build(self.pool.optimizer['pool'], self.pool.trainable_variables)
+            # util.net_build(self.pool, self.initializer)
+
+        if arch in ('PG',):
+            opt_spec = [{'name':'action', 'type':'a', 'schedule_type':'', 'learn_rate':self.learn_rates['action'], 'float_eps':self.float_eps}]; stats_spec = [{'name':'loss', 'b1':0.99, 'b2':0.99, 'dtype':compute_dtype}, {'name':'rwd', 'b1':0.99, 'b2':0.99, 'dtype':tf.float64}]
+            self.action = nets.ArchFull('A', inputs, opt_spec, stats_spec, self.obs_spec, self.action_spec, latent_spec, obs_latent=False, net_blocks=3, net_lstm=net_lstm, net_attn=net_attn, num_heads=4, memory_size=max_steps, latent_multi=1, aug_data_pos=aug_data_pos); outputs = self.action(inputs)
+            # inputs = {'obs':[self.obs_zero[0]], 'step':[self.step_zero], 'reward_prev':[self.rewards_zero], 'return_goal':[self.rewards_zero]} # PG shkspr img tests
+            # self.action = nets.ArchFull('A', inputs, opt_spec, stats_spec, self.obs_spec[0:1]+self.obs_spec[2:], self.action_spec, latent_spec, obs_latent=False, net_blocks=2, net_lstm=net_lstm, net_attn=net_attn, num_heads=4, memory_size=max_steps, aug_data_pos=aug_data_pos); outputs = self.action(inputs) # PG shkspr img tests
+            self.action.optimizer_weights = util.optimizer_build(self.action.optimizer['action'], self.action.trainable_variables)
+            util.net_build(self.action, self.initializer)
+            # thresh = [2e-5,2e-3]; thresh_rates = [77,57,44] # 2e-12 107, 2e-10 89, 2e-8 71, 2e-6 53, 2e-5 44, 2e-4 35, 2e-3 26, 2e-2 17 # _lr-loss
+            # thresh = [2e-5,2e-3]; thresh_rates = [77,57,44] # _lr-rwd-std
+            # self.action_get_learn_rate = util.LearnRateThresh(thresh, thresh_rates)
+
+        if arch in ('AC',):
+            opt_spec = [
+                {'name':'action', 'type':'a', 'schedule_type':'', 'learn_rate':self.learn_rates['action'], 'float_eps':self.float_eps},
+                {'name':'value', 'type':'a', 'schedule_type':'', 'learn_rate':self.learn_rates['value'], 'float_eps':self.float_eps},
+            ]
+            self.rep = nets.ArchTrans('RN', inputs, opt_spec, [], self.obs_spec, latent_spec, obs_latent=False, net_blocks=0, net_lstm=net_lstm, net_attn=net_attn, num_heads=4, memory_size=None, aug_data_pos=aug_data_pos); outputs = self.rep(inputs)
+            self.rep.optimizer_weights = []
+            for spec in opt_spec: self.rep.optimizer_weights += util.optimizer_build(self.rep.optimizer[spec['name']], self.rep.trainable_variables)
+            util.net_build(self.rep, self.initializer)
+            rep_dist = self.rep.dist(outputs); self.latent_zero = tf.zeros_like(rep_dist.sample(), dtype=latent_spec['dtype'])
+            latent_spec.update({'step_shape':self.latent_zero.shape}); self.latent_spec = latent_spec
+
+            opt_spec = [{'name':'action', 'type':'a', 'schedule_type':'', 'learn_rate':self.learn_rates['action'], 'float_eps':self.float_eps}]; stats_spec = [{'name':'rwd', 'b1':0.99, 'b2':0.99, 'dtype':tf.float64}]
+            self.action = nets.ArchGen('AN', self.latent_zero, opt_spec, stats_spec, self.action_spec, latent_spec, net_blocks=2, net_lstm=net_lstm, net_attn=net_attn, num_heads=4, memory_size=max_steps); outputs = self.action(self.latent_zero)
+            self.action.optimizer_weights = util.optimizer_build(self.action.optimizer['action'], self.action.trainable_variables)
+            util.net_build(self.action, self.initializer)
+
+            inputs_cond = {'obs':self.latent_zero, 'actions':self.action_zero_out}
+            opt_spec = [{'name':'value', 'type':'a', 'schedule_type':'', 'learn_rate':self.learn_rates['value'], 'float_eps':self.float_eps}]
+            if value_cont: value_spec = [{'space_name':'values', 'name':'', 'dtype':tf.float64, 'dtype_out':compute_dtype, 'dist_type':'mx', 'num_components':8, 'event_shape':(1,), 'event_size':1, 'step_shape':tf.TensorShape((1,1))}]
+            else: value_spec = [{'space_name':'values', 'name':'', 'dtype':tf.float64, 'dtype_out':compute_dtype, 'dist_type':'d', 'num_components':1, 'event_shape':(1,), 'event_size':1, 'step_shape':tf.TensorShape((1,1))}]
+            # self.value = nets.ArchGen('VN', self.latent_zero, opt_spec, [], value_spec, latent_spec, net_blocks=2, net_lstm=net_lstm, net_attn=net_attn, num_heads=4, memory_size=max_steps); outputs = self.value(self.latent_zero)
+            self.value = nets.ArchFull('VN', inputs_cond, opt_spec, [], self.action_spec, value_spec, latent_spec, obs_latent=True, net_blocks=2, net_lstm=net_lstm, net_attn=net_attn, num_heads=4, memory_size=max_steps, aug_data_pos=aug_data_pos); outputs = self.value(inputs_cond) # _val-cond
+            self.value.optimizer_weights = util.optimizer_build(self.value.optimizer['value'], self.value.trainable_variables)
+            util.net_build(self.value, self.initializer)
+
+        # opt_spec = [{'name':'meta', 'type':'a', 'schedule_type':'', 'learn_rate':tf.constant(2e-5, tf.float64), 'float_eps':self.float_eps}]; stats_spec = [{'name':'loss', 'b1':0.99, 'b2':0.99, 'dtype':compute_dtype}]
+        # inputs_meta = {'obs':[tf.constant([[0,0,0]],compute_dtype)]}; meta_spec_in = [{'space_name':'obs', 'name':'', 'event_shape':(3,), 'event_size':1, 'channels':3, 'step_shape':tf.TensorShape((1,3)), 'num_latents':1}]
+        # self.meta_spec = [{'space_name':'meta', 'name':'', 'dtype':tf.float64, 'dtype_out':compute_dtype, 'min':self.float_eps, 'max':self.learn_rates['action'], 'dist_type':'mx', 'num_components':8, 'event_shape':(1,), 'step_shape':tf.TensorShape((1,1))}]
+        # self.meta = nets.ArchFull('M', inputs_meta, opt_spec, stats_spec, meta_spec_in, self.meta_spec, latent_spec, net_blocks=2, net_lstm=net_lstm, net_attn=net_attn); outputs = self.meta(inputs_meta)
+        # self.meta.optimizer_weights = util.optimizer_build(self.meta.optimizer['meta'], self.meta.trainable_variables)
+        # util.net_build(self.meta, self.initializer)
+
+
+        self.stop, self.stopped_episode, self.pause_episodes = False, max_episodes-1, pause_episodes
+        if platform == "win32": keyboard.add_hotkey('ctrl+alt+k', self.on_stop, suppress=True) # TODO figure out linux/Docker version of this that works
+        self.metrics_spec()
+        # TF bug that wont set graph options with tf.function decorator inside a class

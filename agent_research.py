@@ -454,3 +454,76 @@ class GeneralAI(tf.keras.Model):
                 # gradients = self.action.optimizer['action'].get_unscaled_gradients(gradients)
                 # for i in range(len(gradients)): gradients[i] = gradients[i] / self.loss_scale # _loss-scale
                 self.action.optimizer['action'].apply_gradients(zip(gradients, self.action.trainable_variables))
+            loss_actions_lik = loss_actions_lik.write(step, loss_action_lik / self.action_total_size)
+            loss_actions = loss_actions.write(step, loss_action) # / self.loss_scale
+            metric_actlog = metric_actlog.write(step, action_logits[0][0][0:2])
+
+        loss['action_lik'], loss['action'], loss['actlog'] = loss_actions_lik.concat(), loss_actions.concat(), metric_actlog.stack()
+        return loss
+
+    def PG(self):
+        print("tracing -> GeneralAI PG"); tf.print("RUNNING")
+        # loss_meta, ma_loss_lowest = tf.constant([0],self.compute_dtype), self.float_maxroot
+        # return_goal = tf.constant([[200]],tf.float64) # _rpC
+        return_goal = tf.constant([[-self.loss_scale.numpy()]],tf.float64) # _rpB
+        episode, stop = tf.constant(0), tf.constant(False)
+        while episode < self.max_episodes and not stop:
+            tf.autograph.experimental.set_loop_options(parallel_iterations=1)
+            np_in = tf.numpy_function(self.env_reset, [tf.constant(0)], self.gym_step_dtypes)
+            for i in range(len(np_in)): np_in[i].set_shape(self.gym_step_shapes[i])
+            inputs = {'obs':np_in[:-3], 'rewards':np_in[-3], 'dones':np_in[-2]}; env_metrics = np_in[-1][0]
+
+            # TODO how unlimited length episodes without sacrificing returns signal?
+            self.reset_states(); outputs, inputs = self.PG_actor(inputs, return_goal)
+            # util.stats_update(self.action.stats['rwd'], tf.math.reduce_sum(outputs['rewards'])); avg, ma, ema, snr, std = util.stats_get(self.action.stats['rwd'])
+            rewards_total = outputs['returns'][0][0] # tf.math.reduce_sum(outputs['rewards'])
+            util.stats_update(self.action.stats['rwd'], rewards_total); avg, ma, ema, snr, std = util.stats_get(self.action.stats['rwd'])
+            # return_goal = tf.reshape((ma + 10.0),(1,1)) # _rpP
+            # if outputs['returns'][0:1] > return_goal: return_goal = tf.reshape(outputs['returns'][0:1],(1,1)); tf.print(return_goal) # _rpB
+
+            # # meta learn the optimizer learn rate / step size
+            # _, _, _, _, std = util.stats_get(self.action.stats['loss'])
+            # obs = [self.action.stats['loss']['iter'].value(), tf.cast(ma,self.compute_dtype), std]
+            # inputs_meta = {'obs':[tf.expand_dims(tf.stack(obs,0),0)]}
+
+            # learn_rate = self.action.optimizer['action'].learning_rate
+            # with tf.GradientTape() as tape_meta:
+            #     meta_logits = self.meta(inputs_meta); meta_dist = self.meta.dist[0](meta_logits[0])
+            #     loss_meta = util.loss_PG(meta_dist, tf.reshape(learn_rate,(1,1)), tf.reshape(rewards_total,(1,1)))
+            # gradients = tape_meta.gradient(loss_meta, self.meta.trainable_variables)
+            # self.meta.optimizer['meta'].apply_gradients(zip(gradients, self.meta.trainable_variables))
+
+            # meta_logits = self.meta(inputs_meta); meta_dist = self.meta.dist[0](meta_logits[0])
+            # learn_rate = meta_dist.sample()
+            # self.action.optimizer['action'].learning_rate = util.discretize(learn_rate, self.meta_spec[0])
+            # # self.action.optimizer['action'].learning_rate = tf.squeeze(tf.cast(learn_rate, tf.float64))
+
+
+            self.reset_states(); loss = self.PG_learner_onestep(outputs)
+            util.stats_update(self.action.stats['loss'], tf.math.reduce_mean(loss['action_lik'])); avg_loss, ma_loss, ema_loss, snr_loss, std_loss = util.stats_get(self.action.stats['loss'])
+
+            # self.action.optimizer['action'].learning_rate = self.action_get_learn_rate(ma_loss) # _lr-loss
+            # self.action.optimizer['action'].learning_rate = self.action_get_learn_rate(std) # _lr-rwd-std
+            # self.action.optimizer['action'].learning_rate = tf.math.exp(episode / self.max_episodes * (-15.0 + 9.7) - 9.7) # _lr-scale
+            self.action.optimizer['action'].learning_rate = self.learn_rates['action'] * snr_loss**np.e # **3 # _lr-snr3
+            # self.action.optimizer['action'].learning_rate = self.learn_rates['action'] * (1.0 - rewards_total / 200.0) + self.float_eps # _lr-rwd-lin-scale
+
+            # if ma_loss < ma_loss_lowest: ma_loss_lowest = ma_loss
+            # # if self.action.stats['loss']['iter'] > 10 and std_loss < 1.0 and tf.math.abs(ma_loss) < 1.0:
+            # if snr_loss < 0.5 and std_loss < 0.2 and tf.math.abs(ma_loss) < 0.1:
+            # if self.action.stats['loss']['iter'] > 16 and tf.math.abs(ma_loss) < 1e-1: # self.float_eps 1e-1 # _rst
+            #     tf.print("net_reset (action) at:", episode, " lr:", self.action.optimizer['action'].learning_rate, " ma_loss:", ma_loss, " snr_loss:", snr_loss, " std_loss:", std_loss)
+            #     util.net_reset(self.action); self.action.optimizer['action'].learning_rate = self.learn_rates['action']
+            #     # self.action.optimizer['action'].learning_rate = tf.random.uniform((), dtype=tf.float64, maxval=self.learn_rates['action'], minval=self.float64_eps) # _lr-rnd-linear
+            #     # self.action.optimizer['action'].learning_rate = tf.math.exp(tf.random.uniform((), dtype=tf.float64, maxval=-7, minval=-16)) # _lr-rnd-exp
+
+            log_metrics = [True,True,True,True,True,True,True,True,True,True,True,True,True,True]
+            metrics = [log_metrics, episode, ema, tf.math.reduce_sum(outputs['rewards']), outputs['rewards'][-1][0], tf.shape(outputs['rewards'])[0],
+                ma_loss, tf.math.reduce_mean(loss['action_lik']), # tf.math.reduce_mean(outputs['returns']),
+                tf.math.reduce_mean(loss['action']),
+                tf.math.reduce_mean(loss['actlog'][:,0]), tf.math.reduce_mean(loss['actlog'][:,1]),
+                # tf.math.reduce_mean(loss['actlog'][:,2]), tf.math.reduce_mean(loss['actlog'][:,3]),
+                # snr,
+                # self.action.optimizer['action'].learning_rate,
+                # loss_meta[0],
+            ]

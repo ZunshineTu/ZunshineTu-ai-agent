@@ -527,3 +527,93 @@ class GeneralAI(tf.keras.Model):
                 # self.action.optimizer['action'].learning_rate,
                 # loss_meta[0],
             ]
+            if self.trader:
+                del metrics[2]; metrics[2], metrics[3] = inputs['obs'][4][-1][0], env_metrics[0]
+                metrics += [inputs['obs'][0][-1][0] - outputs['obs'][0][0][0], env_metrics[1]]
+            dummy = tf.numpy_function(self.metrics_update, metrics, [tf.int32])
+
+            if self.save_model:
+                if episode > tf.constant(0) and episode % self.chkpts == tf.constant(0): tf.numpy_function(self.checkpoints, [tf.constant(0)], [tf.int32])
+            stop = tf.numpy_function(self.check_stop, [episode], tf.bool); stop.set_shape(())
+            episode += 1
+        # tf.print("ma_loss_lowest", ma_loss_lowest)
+
+
+
+    def AC_actor(self, inputs, return_goal):
+        print("tracing -> GeneralAI AC_actor")
+        obs, actions = [None]*self.obs_spec_len, [None]*self.action_spec_len
+        for i in range(self.obs_spec_len): obs[i] = tf.TensorArray(self.obs_spec[i]['dtype'], size=1, dynamic_size=True, infer_shape=False, element_shape=self.obs_spec[i]['step_shape'][1:])
+        for i in range(self.action_spec_len): actions[i] = tf.TensorArray(self.action_spec[i]['dtype_out'], size=1, dynamic_size=True, infer_shape=False, element_shape=self.action_spec[i]['step_shape'][1:])
+        rewards = tf.TensorArray(tf.float64, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
+        dones = tf.TensorArray(tf.bool, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
+        returns = tf.TensorArray(tf.float64, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
+
+        step = tf.constant(0)
+        while not inputs['dones'][-1][0]:
+            for i in range(self.obs_spec_len): obs[i] = obs[i].write(step, inputs['obs'][i][-1])
+
+            inputs_step = {'obs':inputs['obs'], 'step':[tf.reshape(step,(1,1))], 'reward_prev':[inputs['rewards']], 'return_goal':[return_goal]}
+            rep_logits = self.rep(inputs_step); rep_dist = self.rep.dist(rep_logits)
+            latent_rep = rep_dist.sample()
+
+            action = [None]*self.action_spec_len
+            action_logits = self.action(latent_rep)
+            for i in range(self.action_spec_len):
+                action_dist = self.action.dist[i](action_logits[i])
+                action[i] = action_dist.sample()
+
+            action_dis = [None]*self.action_spec_len
+            for i in range(self.action_spec_len):
+                actions[i] = actions[i].write(step, action[i][0])
+                action_dis[i] = util.discretize(action[i][0], self.action_spec[i])
+
+            np_in = tf.numpy_function(self.env_step, action_dis, self.gym_step_dtypes)
+            for i in range(len(np_in)): np_in[i].set_shape(self.gym_step_shapes[i])
+            inputs['obs'], inputs['rewards'], inputs['dones'] = np_in[:-3], np_in[-3], np_in[-2]
+
+            rewards = rewards.write(step, inputs['rewards'][-1])
+            dones = dones.write(step, inputs['dones'][-1])
+            returns = returns.write(step, [self.float64_zero])
+            returns_updt = returns.stack()
+            returns_updt = returns_updt + inputs['rewards'][-1]
+            returns = returns.unstack(returns_updt)
+
+            # return_goal -= inputs['rewards']
+            step += 1
+
+        outputs = {}
+        out_obs, out_actions = [None]*self.obs_spec_len, [None]*self.action_spec_len
+        for i in range(self.obs_spec_len): out_obs[i] = obs[i].stack()
+        for i in range(self.action_spec_len): out_actions[i] = actions[i].stack()
+        outputs['obs'], outputs['actions'], outputs['rewards'], outputs['dones'], outputs['returns'] = out_obs, out_actions, rewards.stack(), dones.stack(), returns.stack()
+        return outputs, inputs
+
+    def AC_rep_learner(self, inputs, training=True):
+        print("tracing -> GeneralAI AC_rep_learner")
+        loss = {}
+        loss_values = tf.TensorArray(self.compute_dtype, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
+        loss_actions = tf.TensorArray(self.compute_dtype, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
+
+        inputs_rewards = tf.concat([self.rewards_zero, inputs['rewards']], axis=0)
+        returns = inputs['returns'][0:1] # _loss-final
+        for step in tf.range(tf.shape(inputs['dones'])[0]):
+            obs = [None]*self.obs_spec_len
+            for i in range(self.obs_spec_len): obs[i] = inputs['obs'][i][step:step+1]; obs[i].set_shape(self.obs_spec[i]['step_shape'])
+            action = [None]*self.action_spec_len
+            for i in range(self.action_spec_len): action[i] = inputs['actions'][i][step:step+1]; action[i].set_shape(self.action_spec[i]['step_shape'])
+            # returns = inputs['returns'][step:step+1]
+            returns_calc = tf.squeeze(tf.cast(returns,self.compute_dtype),axis=-1)
+            reward_calc = tf.cast(inputs['rewards'][step],self.compute_dtype)
+
+            inputs_step = {'obs':obs, 'step':[tf.reshape(step,(1,1))], 'reward_prev':[inputs_rewards[step:step+1]], 'return_goal':[returns]}
+            with tf.GradientTape(persistent=True) as tape_value, tf.GradientTape(persistent=True) as tape_action:
+                rep_logits = self.rep(inputs_step); rep_dist = self.rep.dist(rep_logits)
+                latent_rep = rep_dist.sample()
+
+            inputs_value = {'obs':latent_rep, 'actions':action}
+            with tape_value:
+                value_logits = self.value(inputs_value); value_dist = self.value.dist[0](value_logits[0])
+                values = value_dist.sample()
+                if self.value_cont: loss_value = util.loss_likelihood(value_dist, returns)
+                else: loss_value = util.loss_diff(values, returns)

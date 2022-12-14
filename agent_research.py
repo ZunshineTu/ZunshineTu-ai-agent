@@ -686,3 +686,74 @@ class GeneralAI(tf.keras.Model):
                 # loss_action = loss_action_lik * returns_calc - tf.squeeze(values,axis=-1))
                 # loss_action = loss_action_lik * tf.math.exp(-loss_value) # _lEp1
                 # loss_action = loss_action_lik * (1.0 - tf.math.exp(-loss_value)) # _lEpC
+                # loss_action = loss_action_lik * (-loss_value) # _lEp2
+                # loss_action = loss_action_lik * loss_value # _lEp9 *
+                # loss_action = loss_action_lik * ((tf.math.exp(-loss_value) + 1.0) * 100.0) # _lEp3
+                # loss_action = loss_action_lik * (returns_calc - loss_value) # _lEp4
+                loss_action = loss_action_lik * (returns_calc + loss_value) # _lEp5 *
+                # loss_action = loss_action_lik * (tf.math.exp(-loss_value) + 1.0) # _lEp6
+                # loss_action = loss_action_lik * ((returns_calc / 200.0) - tf.math.exp(-loss_value)) # _lEp7
+                # loss_action = loss_action_lik * ((returns_calc / 200.0) - tf.math.exp(-loss_value) + 1.0) / 2.0 # _lEp8
+                # loss_action = loss_action_lik * (returns_calc + loss_value + reward_calc) # _lEp5R *
+                loss_action = loss_action * self.loss_scale
+            gradients = tape_action.gradient(loss_action, self.action.trainable_variables)
+            for i in range(len(gradients)): gradients[i] = gradients[i] / self.loss_scale
+            self.action.optimizer['action'].apply_gradients(zip(gradients, self.action.trainable_variables))
+            loss_actions_lik = loss_actions_lik.write(step, loss_action_lik / self.action_total_size)
+            loss_actions = loss_actions.write(step, loss_action / self.loss_scale)
+            # metric_advantages = metric_advantages.write(step, (returns - tf.cast(values,tf.float64))[0])
+            metric_actlog = metric_actlog.write(step, action_logits[0][0][0:2])
+            # return_goal -= inputs['rewards'][step:step+1]; return_goal.set_shape((1,1))
+
+        loss['value'], loss['action_lik'], loss['action'], loss['actlog'] = loss_values.concat(), loss_actions_lik.concat(), loss_actions.concat(), metric_actlog.stack()
+        # loss['advantages'] = metric_advantages.concat()
+        return loss
+
+    def AC(self):
+        print("tracing -> GeneralAI AC"); tf.print("RUNNING")
+        return_goal, ma = tf.constant([[-self.loss_scale.numpy()]], tf.float64), tf.constant(0,tf.float64)
+        episode, stop = tf.constant(0), tf.constant(False)
+        while episode < self.max_episodes and not stop:
+            tf.autograph.experimental.set_loop_options(parallel_iterations=1) # TODO parallel wont work with single instance env, will this work multiple?
+            np_in = tf.numpy_function(self.env_reset, [tf.constant(0)], self.gym_step_dtypes)
+            for i in range(len(np_in)): np_in[i].set_shape(self.gym_step_shapes[i])
+            inputs = {'obs':np_in[:-3], 'rewards':np_in[-3], 'dones':np_in[-2]}; env_metrics = np_in[-1][0]
+
+            self.reset_states(); outputs, inputs = self.AC_actor(inputs, return_goal)
+            rewards_total = outputs['returns'][0][0] # tf.math.reduce_sum(outputs['rewards'])
+            util.stats_update(self.action.stats['rwd'], rewards_total); avg, ma, ema, snr, std = util.stats_get(self.action.stats['rwd'])
+            self.reset_states(); loss_rep = self.AC_rep_learner(outputs)
+            self.reset_states(); loss = self.AC_learner_onestep(outputs)
+
+            # return_goal = tf.constant([[200.0]], tf.float64)
+            # return_goal = tf.reshape((ma + 10.0),(1,1)) # _rpP
+            if outputs['returns'][0:1] > return_goal: return_goal = tf.reshape(outputs['returns'][0:1],(1,1)); tf.print(return_goal) # _rpB
+
+            log_metrics = [True,True,True,True,True,True,True,True,True,True,True,True,True,True]
+            metrics = [log_metrics, episode, ma, tf.math.reduce_sum(outputs['rewards']), outputs['rewards'][-1][0], tf.shape(outputs['rewards'])[0],
+                tf.math.reduce_mean(loss['action_lik']), tf.math.reduce_mean(loss_rep['value']),
+                tf.math.reduce_mean(loss['action']), tf.math.reduce_mean(loss['value']),
+                # tf.math.reduce_mean(outputs['returns']), tf.math.reduce_mean(loss['advantages']),
+                tf.math.reduce_mean(loss['actlog'][:,0]), tf.math.reduce_mean(loss['actlog'][:,1]),
+            ]
+            if self.trader:
+                del metrics[2]; metrics[2], metrics[3] = inputs['obs'][4][-1][0], env_metrics[0]
+                metrics += [inputs['obs'][0][-1][0] - outputs['obs'][0][0][0], env_metrics[1]]
+            dummy = tf.numpy_function(self.metrics_update, metrics, [tf.int32])
+
+            if self.save_model:
+                if episode > tf.constant(0) and episode % self.chkpts == tf.constant(0): tf.numpy_function(self.checkpoints, [tf.constant(0)], [tf.int32])
+            stop = tf.numpy_function(self.check_stop, [episode], tf.bool); stop.set_shape(())
+            episode += 1
+
+
+
+    def MU_actor(self, inputs, return_goal):
+        print("tracing -> GeneralAI MU_actor")
+        obs, actions = [None]*self.obs_spec_len, [None]*self.action_spec_len
+        for i in range(self.obs_spec_len): obs[i] = tf.TensorArray(self.obs_spec[i]['dtype'], size=1, dynamic_size=True, infer_shape=False, element_shape=self.obs_spec[i]['step_shape'][1:])
+        for i in range(self.action_spec_len): actions[i] = tf.TensorArray(self.action_spec[i]['dtype_out'], size=1, dynamic_size=True, infer_shape=False, element_shape=self.action_spec[i]['step_shape'][1:])
+        rewards = tf.TensorArray(tf.float64, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
+        dones = tf.TensorArray(tf.bool, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
+        returns = tf.TensorArray(tf.float64, size=0, dynamic_size=True, infer_shape=False, element_shape=(1,))
+        latents_rep = tf.TensorArray(self.latent_spec['dtype'], size=1, dynamic_size=True, infer_shape=False, element_shape=self.latent_spec['step_shape'])

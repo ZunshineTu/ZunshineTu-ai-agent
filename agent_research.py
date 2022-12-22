@@ -757,3 +757,86 @@ class GeneralAI(tf.keras.Model):
         dones = tf.TensorArray(tf.bool, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
         returns = tf.TensorArray(tf.float64, size=0, dynamic_size=True, infer_shape=False, element_shape=(1,))
         latents_rep = tf.TensorArray(self.latent_spec['dtype'], size=1, dynamic_size=True, infer_shape=False, element_shape=self.latent_spec['step_shape'])
+        # latents_trans = tf.TensorArray(self.latent_spec['dtype'], size=1, dynamic_size=True, infer_shape=False, element_shape=self.latent_spec['step_shape'])
+
+        action_prev = self.action_zero_out
+        step = tf.constant(0)
+        while not inputs['dones'][-1][0]:
+            for i in range(self.obs_spec_len): obs[i] = obs[i].write(step, inputs['obs'][i][-1])
+
+            inputs_step = {'obs':inputs['obs'], 'step':[tf.reshape(step,(1,1))], 'reward_prev':[inputs['rewards']], 'done_prev':[inputs['dones']], 'actions':action_prev, 'return_goal':[return_goal]}
+            rep_logits = self.rep(inputs_step); rep_dist = self.rep.dist(rep_logits)
+            latent_rep = rep_dist.sample()
+            latents_rep = latents_rep.write(step, latent_rep)
+
+            # TODO train trans for reconstruct and next state, condition action with reconstruct loss
+            trans_logits = self.trans(latent_rep); trans_dist = self.trans.dist[0](trans_logits[0])
+            latent_trans = trans_dist.sample()
+            # latents_trans = latents_trans.write(step, latent_trans[0])
+
+            self.action.net.layer_attn[0]._memory_img[-self.mem_img_size:].assign(latent_trans)
+            self.action.net.layer_attn[0]._mem_idx_img.assign(self.max_steps - self.mem_img_size)
+            action_logits = self.action(latent_rep, store_memory=False, use_img=True, store_real=True) # _act-hist
+            # action_logits = self.action(latent_trans)
+            action = [None]*self.action_spec_len
+            for i in range(self.action_spec_len):
+                # action_logits[i] = tf.constant(np.zeros(action_logits[i].shape),self.compute_dtype) # random actions for categorical
+                action_dist = self.action.dist[i](action_logits[i])
+                action[i] = action_dist.sample()
+            action_prev = action
+
+            action_dis = [None]*self.action_spec_len
+            for i in range(self.action_spec_len):
+                actions[i] = actions[i].write(step, action[i][0])
+                action_dis[i] = util.discretize(action[i][0], self.action_spec[i])
+
+            np_in = tf.numpy_function(self.env_step, action_dis, self.gym_step_dtypes)
+            for i in range(len(np_in)): np_in[i].set_shape(self.gym_step_shapes[i])
+            inputs['obs'], inputs['rewards'], inputs['dones'] = np_in[:-3], np_in[-3], np_in[-2]
+
+            rewards = rewards.write(step, inputs['rewards'][-1])
+            dones = dones.write(step, inputs['dones'][-1])
+            returns = returns.write(step, [self.float64_zero])
+            returns_updt = returns.stack()
+            returns_updt = returns_updt + inputs['rewards'][-1]
+            returns = returns.unstack(returns_updt)
+
+            step += 1
+        for i in range(self.obs_spec_len): obs[i] = obs[i].write(step, inputs['obs'][i][-1])
+        inputs_step = {'obs':inputs['obs'], 'step':[tf.reshape(step,(1,1))], 'reward_prev':[inputs['rewards']], 'done_prev':[inputs['dones']], 'actions':action_prev, 'return_goal':[return_goal]}
+        rep_logits = self.rep(inputs_step); rep_dist = self.rep.dist(rep_logits)
+        latent_rep = rep_dist.sample()
+        latents_rep = latents_rep.write(step, latent_rep)
+
+        outputs = {}
+        out_obs, out_actions = [None]*self.obs_spec_len, [None]*self.action_spec_len
+        for i in range(self.obs_spec_len): out_obs[i] = obs[i].stack()
+        for i in range(self.action_spec_len): out_actions[i] = actions[i].stack()
+        outputs['obs'], outputs['actions'], outputs['rewards'], outputs['dones'], outputs['returns'] = out_obs, out_actions, rewards.stack(), dones.stack(), returns.stack()
+        outputs['latents_rep'] = latents_rep.stack()
+        # outputs['latents_trans'] = latents_trans.stack()
+        return outputs, inputs
+
+    def MU_learner_onestep(self, inputs, training=True):
+        print("tracing -> GeneralAI MU_learner_onestep")
+        loss = {}
+        loss_actions_lik = tf.TensorArray(self.compute_dtype, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
+        loss_actions = tf.TensorArray(self.compute_dtype, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
+        loss_transs = tf.TensorArray(self.compute_dtype, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
+        loss_values = tf.TensorArray(self.compute_dtype, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
+        loss_gens = tf.TensorArray(self.compute_dtype, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
+        metric_actlog = tf.TensorArray(self.compute_dtype, size=1, dynamic_size=True, infer_shape=False, element_shape=(2,))
+        loss_acts = tf.TensorArray(self.compute_dtype, size=1, dynamic_size=True, infer_shape=False, element_shape=(1,))
+
+        inputs_rewards, inputs_dones, inputs_latents_rep, action_prev = tf.concat([self.rewards_zero, inputs['rewards']], axis=0), tf.concat([self.dones_zero, inputs['dones']], axis=0), tf.squeeze(inputs['latents_rep'], axis=1), self.action_zero_out
+        returns = inputs['returns'][0:1]; returns_calc = tf.squeeze(tf.cast(returns,self.compute_dtype)); returns_calc_orig = returns_calc # _loss-final
+        avg_rtns, ma_rtns, ema_rtns, snr_rtns, std_rtns = util.stats_get(self.action.stats['rwd']); ema_rtns = tf.cast(ema_rtns,self.compute_dtype)
+        returns_calc = returns_calc - ema_rtns # _rtns-ema
+        # returns_calc = util.symlog(returns_calc) # _rtns-sym
+
+        num_reps = tf.shape(inputs['latents_rep'])[0]
+        for step in tf.range(tf.shape(inputs['dones'])[0]):
+            obs = [None]*self.obs_spec_len
+            for i in range(self.obs_spec_len): obs[i] = inputs['obs'][i][step:step+1]; obs[i].set_shape(self.obs_spec[i]['step_shape'])
+            action = [None]*self.action_spec_len
+            for i in range(self.action_spec_len): action[i] = inputs['actions'][i][step:step+1]; action[i].set_shape(self.action_spec[i]['step_shape'])

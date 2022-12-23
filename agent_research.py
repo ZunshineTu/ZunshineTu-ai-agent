@@ -920,3 +920,109 @@ class GeneralAI(tf.keras.Model):
             gradients = tape_value.gradient(loss_value, self.value.trainable_variables)
             self.value.optimizer['value'].apply_gradients(zip(gradients, self.value.trainable_variables))
             loss_values = loss_values.write(step, loss_value)
+
+            # gradients = tape_gen.gradient(loss_gen, self.gen.trainable_variables)
+            # self.gen.optimizer['gen'].apply_gradients(zip(gradients, self.gen.trainable_variables))
+            # loss_gens = loss_gens.write(step, loss_gen / (self.gen_spec_len * self.mem_img_size)) # * self.mem_img_size
+
+            if loss_action_lik > self.float_eps: # _grad-lim-eps
+                gradients = tape_action.gradient(loss_action, self.action.trainable_variables)
+                self.action.optimizer['action'].apply_gradients(zip(gradients, self.action.trainable_variables))
+            loss_actions_lik = loss_actions_lik.write(step, loss_action_lik / self.action_total_size)
+            loss_actions = loss_actions.write(step, loss_action)
+            metric_actlog = metric_actlog.write(step, action_logits[0][0][0:2])
+
+            # gradients = tape_act.gradient(loss_act, self.act.trainable_variables)
+            # self.act.optimizer['act'].apply_gradients(zip(gradients, self.act.trainable_variables))
+            # loss_acts = loss_acts.write(step, loss_act)
+
+        loss['action_lik'], loss['action'], loss['actlog'] = loss_actions_lik.concat(), loss_actions.concat(), metric_actlog.stack()
+        loss['trans'], loss['value'], loss['gen'], loss['act'] = loss_transs.concat(), loss_values.concat(), loss_gens.concat(), loss_acts.concat()
+        return loss
+
+    def MU(self):
+        print("tracing -> GeneralAI MU"); tf.print("RUNNING")
+        # return_goal = tf.constant([[200]],tf.float64) # _rpC
+        return_goal = tf.constant([[-self.loss_scale.numpy()]],tf.float64) # _rpB
+        episode, stop = tf.constant(0), tf.constant(False)
+        while episode < self.max_episodes and not stop:
+            tf.autograph.experimental.set_loop_options(parallel_iterations=1)
+            np_in = tf.numpy_function(self.env_reset, [tf.constant(0)], self.gym_step_dtypes)
+            for i in range(len(np_in)): np_in[i].set_shape(self.gym_step_shapes[i])
+            inputs = {'obs':np_in[:-3], 'rewards':np_in[-3], 'dones':np_in[-2]}; env_metrics = np_in[-1][0]
+
+            self.reset_states(); outputs, inputs = self.MU_actor(inputs, return_goal)
+            rewards_total = outputs['returns'][0][0] # tf.math.reduce_sum(outputs['rewards'])
+            util.stats_update(self.action.stats['rwd'], rewards_total); avg, ma, ema, snr, std = util.stats_get(self.action.stats['rwd'])
+
+            # train = tf.constant(False) if ma > 195 else tf.constant(True) # _train-rtn
+            self.reset_states(); loss = self.MU_learner_onestep(outputs)
+
+            util.stats_update(self.action.stats['loss'], tf.math.reduce_mean(loss['action_lik'])); avg_loss, ma_loss, ema_loss, snr_loss, std_loss = util.stats_get(self.action.stats['loss'])
+            self.action.optimizer['action'].learning_rate = self.learn_rates['action'] * snr_loss**np.e # **3 # _lr-snr3
+            util.stats_update(self.trans.stats['loss'], tf.math.reduce_mean(loss['trans'])); avg_trans, ma_trans, ema_trans, snr_trans, std_trans = util.stats_get(self.trans.stats['loss'])
+            self.trans.optimizer['trans'].learning_rate = self.learn_rates['trans'] * snr_trans**np.e
+            util.stats_update(self.value.stats['loss'], tf.math.reduce_mean(loss['value'])); avg_value, ma_value, ema_value, snr_value, std_value = util.stats_get(self.value.stats['loss'])
+            self.value.optimizer['value'].learning_rate = self.learn_rates['value'] * snr_value**np.e # **3 # _lr-snr3
+            # util.stats_update(self.gen.stats['loss'], tf.math.reduce_mean(loss['gen'])); avg_gen, ma_gen, ema_gen, snr_gen, std_gen = util.stats_get(self.gen.stats['loss'])
+            # self.gen.optimizer['gen'].learning_rate = self.learn_rates['gen'] * snr_gen**np.e # **3 # _lr-snr3
+
+            self.rep.optimizer['action'].learning_rate = self.learn_rates['rep_action'] * snr_loss**np.e
+            # self.rep.optimizer['trans'].learning_rate = self.learn_rates['rep_trans'] * snr_trans**np.e
+            self.rep.optimizer['value'].learning_rate = self.learn_rates['rep_value'] * snr_value**np.e
+            # self.rep.optimizer['gen'].learning_rate = self.learn_rates['rep_gen'] * snr_gen**np.e
+            # # self.rep.optimizer['rep'].learning_rate = self.learn_rates['rep'] * tf.math.exp(self.rep.optimizer['rep'].episodes / 30000 * np.log(self.float_eps)) # _rep-30k
+            # # self.rep.optimizer['rep'].episodes.assign_add(1) # _rep-30k
+
+            # util.stats_update(self.act.stats['loss'], tf.math.reduce_mean(loss['act'])); avg_act, ma_act, ema_act, snr_act, std_act = util.stats_get(self.act.stats['loss'])
+            # self.act.optimizer['act'].learning_rate = self.learn_rates['act'] * snr_act # **3 # _lr-snr3
+
+            # if outputs['returns'][0:1] > return_goal: return_goal = tf.reshape(outputs['returns'][0:1],(1,1)); tf.print(return_goal) # _rpB
+            if self.action.stats['loss']['iter'] > 16 and tf.math.abs(ma_loss) < 1e-2: # self.float_eps 1e-1 # _rst
+                tf.print("net_reset (action) at:", episode, " lr:", self.action.optimizer['action'].learning_rate, " ma_loss:", ma_loss, " snr_loss:", snr_loss, " std_loss:", std_loss)
+                util.net_reset(self.action); self.action.optimizer['action'].learning_rate = self.learn_rates['action']
+
+
+            log_metrics = [True,True,True,True,True,True,True,True,True,True,True,True,True,True]
+            metrics = [log_metrics, episode, ema, tf.math.reduce_sum(outputs['rewards']), outputs['rewards'][-1][0], tf.shape(outputs['rewards'])[0],
+                ma_loss, tf.math.reduce_mean(loss['action_lik']), # tf.math.reduce_mean(outputs['returns']),
+                # tf.math.reduce_mean(loss['action']),
+                tf.math.reduce_mean(loss['trans']),
+                tf.math.reduce_mean(loss['value']),
+                # tf.math.reduce_mean(loss['gen']),
+                # tf.math.reduce_mean(loss['act']),
+                # tf.math.reduce_mean(loss['actlog'][:,0]), tf.math.reduce_mean(loss['actlog'][:,1]),
+                # snr_loss, std_loss, # ma, ema, snr, std
+                # self.rep.optimizer['action'].learning_rate,
+                # self.rep.optimizer['trans'].learning_rate,
+                # self.action.optimizer['action'].learning_rate,
+                # self.trans.optimizer['trans'].learning_rate,
+                # self.rep.optimizer['rep'].learning_rate(self.rep.optimizer['rep'].iterations),
+            ]
+            if self.trader:
+                del metrics[2]; metrics[2], metrics[3] = inputs['obs'][4][-1][0], env_metrics[0]
+                metrics += [inputs['obs'][0][-1][0] - outputs['obs'][0][0][0], env_metrics[1]]
+            dummy = tf.numpy_function(self.metrics_update, metrics, [tf.int32])
+
+            if self.save_model:
+                if episode > tf.constant(0) and episode % self.chkpts == tf.constant(0): tf.numpy_function(self.checkpoints, [tf.constant(0)], [tf.int32])
+            stop = tf.numpy_function(self.check_stop, [episode], tf.bool); stop.set_shape(())
+            episode += 1
+
+
+
+
+def params(): pass
+load_model, save_model, chkpts = False, False, 5000
+max_episodes, pause_episodes = 100, False
+value_cont = False
+latent_size = 16
+latent_dist = 'd' # 'd' = deterministic, 'c' = categorical, 'mx' = continuous(mix-log)
+mixture_multi = 4 # mixture distribution size, multiply num components
+net_lstm = False
+net_attn = {'net':True, 'io':True, 'out':True, 'ar':True}
+aio_max_latents = 16
+attn_mem_base = 4
+aug_data_step, aug_data_pos = True, True
+
+device_type = 'GPU' # use GPU for large networks (over 8 total net blocks?) or output data (512 bytes?)

@@ -1026,3 +1026,98 @@ attn_mem_base = 4
 aug_data_step, aug_data_pos = True, True
 
 device_type = 'GPU' # use GPU for large networks (over 8 total net blocks?) or output data (512 bytes?)
+device_type = 'CPU'
+
+machine, device, extra = 'dev', 0, '' # _loss-rwdO-rwdS0-rtnsS0-ent0-logits15 _rtns-ema_rtnsEM_rtnsE1e3_lr2e5-snr3_rst1e1 _loss-final_lr-snr-99_rwd-prev _out-aio2-mlp _data-same-rnd-N1 _mlp-diff _lat128_lay512-256-64 _val2e5_rep2e8_lEp5_rpP10 _VOar-7 _optR _rtnO _prs2 _Oab _lPGv _RfB _train _entropy3 _mae _perO-NR-NT-G-Nrez _rez-rezoR-rezoT-rezoG _mixlog-abs-log1p-Nreparam _obs-tsBoxF-dataBoxI_round _Nexp-Ne9-Nefmp36-Nefmer154-Nefme308-emr-Ndiv _MUimg-entropy-values-policy-Netoe _AC-Nonestep-aing _mem-sort _stepE _cncat
+
+trader, env_async, env_async_clock, env_async_speed, env_reconfig, chart_lim = False, False, 0.001, 160.0, False, 0.003
+env_name, max_steps, env_render, env_reconfig, env = 'CartPole', 256, False, True, gym.make('CartPole-v0') # ; env.observation_space.dtype = np.dtype('float64') # (4) float32    ()2 int64    200  195.0
+# env_name, max_steps, env_render, env_reconfig, env = 'CartPole', 512, False, True, gym.make('CartPole-v1', max_episode_steps=500) # ; env.observation_space.dtype = np.dtype('float64') # (4) float32    ()2 int64    500  475.0
+# env_name, max_steps, env_render, env_reconfig, env = 'Acrobot', 512, False, True, gym.make('Acrobot-v1', max_episode_steps=500) # ; env.observation_space.dtype = np.dtype('float64') # (6) float32    ()3 int64    500  -100.0
+# env_name, max_steps, env_render, env_reconfig, env = 'LunarLand', 1024, False, True, gym.make('LunarLander-v2') # (8) float32    ()4 int64    1000  200.0
+# env_name, max_steps, env_render, env_reconfig, env = 'BipedalWalker', 1024, False, True, gym.make('BipedalWalker-v3', render_mode=None, hardcore=False) # (24) float32    (4) float32    1600  300.0
+# env_name, max_steps, env_render, env_reconfig, env = 'CarRacing', 1024, False, False, gym.make('CarRacing-v2', render_mode=None, domain_randomize=True, continuous=False) # (96,96,3) uint8    ()5 int64 / (3) float32    1000  900.0
+
+# env_name, max_steps, env_render, env = 'Breakout', 256, False, gym.make('ALE/Breakout-v5', render_mode=None, full_action_space=True, frameskip=4) # (210,160,3) uint8    ()4 int64    108000 30:300 ALE/Breakout-v5 BreakoutNoFrameskip-v4
+# env_name, max_steps, env_render, env = 'MsPacman', 256, False, gym.make('ALE/MsPacman-v5', full_action_space=True, frameskip=4) # (210,160,3) uint8    ()9 int64    108000 7000:12000
+# env_name, max_steps, env_render, env = 'MontezumaRevenge', 256, False, gym.make('ALE/MontezumaRevenge-v5', full_action_space=True, frameskip=4) # (210,160,3) uint8    ()18 int64    108000 4700:2500
+# env = gym.wrappers.AtariPreprocessing(env, noop_max=5, frame_skip=1, screen_size=84, grayscale_obs=False, grayscale_newaxis=True)
+# env = gym.wrappers.ResizeObservation(env, (84,84)); env = gym.wrappers.GrayScaleObservation(env, keep_dim=True) # env.metadata['render_fps'] = 30 # 'rgb_array'; env = gym.wrappers.HumanRendering(env)
+
+# import crafter as env_; env_name, max_steps, env_render, env = 'Crafter', 64, False, env_.Env(); env = gym.wrappers.EnvCompatibility(env) # (64,64,3) uint8    ()17 int64
+# env.action_space, env.observation_space = gym.spaces.Discrete(17), gym.spaces.Box(low=0, high=255, shape=(64,64,3), dtype=np.uint8)
+# # env = env_.Recorder(env, 'test', save_stats=True, save_video=False, save_episode=False)
+
+# import envs_local.random_env as env_; env_name, max_steps, env_render, env = 'TestRnd', 64, False, env_.RandomEnv(True)
+# import envs_local.data_env as env_; env_name, max_steps, env_render, env = 'DataShkspr', 64, False, env_.DataEnv('shkspr')
+# from gym_trader.envs import TraderEnv; tenv = 4; env_name, max_steps, env_render, env, trader, chart_lim = 'Trader'+str(tenv), 256, False, TraderEnv(agent_id=device, env=tenv), True, 0.0; extra += "_rs{}-td{}-s{}-dd{:.0e}".format(env.NUM_EPISODES,int(env.TIMEDELTA_RANGE),int(env.MAX_EPISODE_TIME/env.TIMEDELTA_RANGE),int(env.START_TARGET_BAL))
+
+# max_steps = 32 # max replay buffer or train interval or bootstrap
+
+# arch = 'TEST' # testing architechures
+# arch = 'PG'; learn_rates = {'action':4e-6} #, 'act':4e-6 # Policy Gradient agent, PG loss
+# arch = 'AC'; learn_rates = {'action':4e-6, 'value':2e-6} # Actor Critic, PG and advantage loss
+arch = 'MU'; learn_rates = {'action':4e-6, 'trans':2e-4, 'value':2e-4, 'rep_action':6e-7, 'rep_trans':6e-7, 'rep_value':6e-7} #, 'gen':2e-4, 'rep_gen':2e-6, 'act':4e-5, 'pool':2e-6 # Combined PG and world model
+
+if __name__ == '__main__':
+    ## manage multiprocessing
+    # # setup ctrl,data,param sharing
+    # # start agents (real+dreamers)
+    # agent = Agent(model)
+    # # agent_process = mp.Process(target=agent.vivify, name='AGENT', args=(lock_print, process_ctrl, weights_shared))
+    # # agent_process.start()
+    # # quit on keyboard (space = save, esc = no save)
+    # process_ctrl.value = 0
+    # agent_process.join()
+
+    if env_async: import envs_local.async_wrapper as envaw_; env_name, env = env_name+'-asyn', envaw_.AsyncWrapperEnv(env, env_async_clock, env_async_speed, env_render)
+    if env_reconfig: import envs_local.reconfig_wrapper as envrw_; env_name, env = env_name+'-r', envrw_.ReconfigWrapperEnv(env)
+    with tf.device("/device:{}:{}".format(device_type,(device if device_type=='GPU' else 0))):
+        model = GeneralAI(arch, env, trader, env_render, save_model, chkpts, max_episodes, pause_episodes, max_steps, learn_rates, value_cont, latent_size, latent_dist, mixture_multi, net_lstm, net_attn, aio_max_latents, attn_mem_base, aug_data_step, aug_data_pos)
+        name = "gym-{}-{}-{}-a{}{}-{}".format(arch, env_name, machine, device, extra, time.strftime("%y-%m-%d-%H-%M-%S"))
+
+        ## debugging
+        # model.build(()); model.action.summary(); quit(0)
+        # inputs = {'obs':model.obs_zero, 'rewards':tf.constant([[0]],tf.float64), 'dones':tf.constant([[False]],tf.bool)}
+        # # inp_sig = [[[tf.TensorSpec(shape=None, dtype=tf.float32)], tf.TensorSpec(shape=None, dtype=tf.float64), tf.TensorSpec(shape=None, dtype=tf.bool)]]
+        # # model.AC_actor = tf.function(model.AC_actor, input_signature=inp_sig, experimental_autograph_options=tf.autograph.experimental.Feature.ALL)
+        # model.AC_actor = tf.function(model.AC_actor, experimental_autograph_options=tf.autograph.experimental.Feature.LISTS)
+        # self.AC_actor = tf.function(self.AC_actor)
+        # print(tf.autograph.to_code(model.MU_run_episode, recursive=True, experimental_optional_features=tf.autograph.experimental.Feature.LISTS)); quit(0)
+        # # print(tf.autograph.to_code(model.AC_actor.python_function, experimental_optional_features=tf.autograph.experimental.Feature.LISTS)); quit(0)
+        # print(model.AC_actor.get_concrete_function(inputs)); quit(0)
+        # print(model.AC_actor.get_concrete_function(inputs).graph.as_graph_def()); quit(0)
+        # obs, info = env.reset()
+        # # test = model.AC_actor.python_function(inputs)
+        # test = model.AC_actor(inputs)
+        # print(test); quit(0)
+
+
+        ## load models
+        model_files, name_arch = {}, ""
+        for net in model.layers:
+            model_name = "{}-{}-a{}".format(net.arch_desc_file, machine, device)
+            model_file = "{}/tf-data-models-local/{}.h5".format(curdir, model_name); loaded_model = False
+            model_files[net.name] = model_file
+            if (load_model or net.name == 'M') and tf.io.gfile.exists(model_file):
+                net.load_weights(model_file, by_name=True, skip_mismatch=True)
+                print("LOADED {} weights from {}".format(net.name, model_file)); loaded_model = True
+            name_opt = "-O{}{}".format(net.opt_spec['type'], ('' if net.opt_spec['schedule_type']=='' else '-S'+net.opt_spec['schedule_type'])) if hasattr(net, 'opt_spec') else ''
+            name_arch += "   {}{}-{}".format(net.arch_desc, name_opt, 'load' if loaded_model else 'new')
+        model.model_files = model_files
+
+
+        ## run
+        print("RUN {}\n{}".format(name, name_arch))
+        arch_run = getattr(model, arch)
+        t1_start = time.perf_counter_ns()
+        arch_run()
+        total_time = (time.perf_counter_ns() - t1_start) / 1e9 # seconds
+        env.close()
+
+
+        ## metrics
+        nans = [np.nan]*(max_episodes-model.stopped_episode-1)
+        metrics_loss = model.metrics_loss
+        for loss_group in metrics_loss.values():
+            for k in loss_group.keys():

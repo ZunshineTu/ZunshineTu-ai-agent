@@ -1121,3 +1121,56 @@ if __name__ == '__main__':
         metrics_loss = model.metrics_loss
         for loss_group in metrics_loss.values():
             for k in loss_group.keys():
+                for j in range(len(loss_group[k])):
+                    if j > model.stopped_episode: loss_group[k][j:] = nans; break
+                    else: loss_group[k][j] = 0 if loss_group[k][j] == [] else np.mean(loss_group[k][j])
+        # TODO np.mean, reduce size if above 200,000 episodes
+
+        total_steps = int(np.nansum(metrics_loss['1steps']['steps+']))
+        step_time = total_time/total_steps
+        learn_rates_txt, attn_txt = "", ""
+        for k,v in learn_rates.items(): learn_rates_txt += "  {}:{:.0e}".format(k,v)
+        for k,v in net_attn.items(): attn_txt += " {}".format(k) if v else ''
+        title = "{}    [{}-{}]\n{}\ntime:{}    steps:{}    t/s:{:.8f}    ms:{}".format(name, device_type, tf.keras.backend.floatx(), name_arch, util.print_time(total_time), total_steps, step_time, max_steps)
+        title += "     |     attn:{}    al:{}    am:{}".format(attn_txt, aio_max_latents, attn_mem_base)
+        title += "     |     a-clk:{}    a-spd:{}    aug:{}{}".format(env_async_clock, env_async_speed, ('S' if aug_data_step else ''), ('P' if aug_data_pos else ''))
+        title += "     |   {}".format(learn_rates_txt); print(title)
+
+        import matplotlib as mpl
+        mpl.rcParams['axes.prop_cycle'] = mpl.cycler(color=['blue','lightblue','green','lime','red','lavender','turquoise','cyan','magenta','salmon','yellow','gold','black','brown','purple','pink','orange','teal','coral','darkgreen','tan'])
+        plt.figure(num=name, figsize=(34, 18), tight_layout=True)
+        xrng, i, vplts = np.arange(0, max_episodes, 1), 0, 0
+        for loss_group_name in metrics_loss.keys(): vplts += int(loss_group_name[0])
+
+        for loss_group_name, loss_group in metrics_loss.items():
+            rows, col, m_min, m_max, combine, yscale = int(loss_group_name[0]), 0, [0]*len(loss_group), [0]*len(loss_group), loss_group_name.endswith('*'), ('log' if loss_group_name[1] == '~' else 'linear')
+            if combine: spg = plt.subplot2grid((vplts, 1), (i, 0), rowspan=rows, xlim=(0, max_episodes), yscale=yscale); plt.grid(axis='y',alpha=0.3)
+            for metric_name, metric in loss_group.items():
+                metric = np.asarray(metric, np.float64); m_min[col], m_max[col] = np.nanquantile(metric, chart_lim), np.nanquantile(metric, 1.0-chart_lim)
+                if not combine: spg = plt.subplot2grid((vplts, len(loss_group)), (i, col), rowspan=rows, xlim=(0, max_episodes), ylim=(m_min[col], m_max[col]), yscale=yscale); plt.grid(axis='y',alpha=0.3,which='both')
+                # plt.plot(xrng, talib.EMA(metric, timeperiod=max_episodes//10+2), alpha=1.0, label=metric_name); plt.plot(xrng, metric, alpha=0.3)
+                # plt.plot(xrng, bottleneck.move_mean(metric, window=max_episodes//10+2, min_count=1), alpha=1.0, label=metric_name); plt.plot(xrng, metric, alpha=0.3)
+                if metric_name.startswith('-'): plt.plot(xrng, metric, alpha=1.0, label=metric_name)
+                else: plt.plot(xrng, util.ewma(metric, window=max_episodes//10+2), alpha=1.0, label=metric_name); plt.plot(xrng, metric, alpha=0.3)
+                plt.ylabel('value'); plt.legend(loc='upper left'); col+=1
+            if combine: spg.set_ylim(np.min(m_min), np.max(m_max))
+            if i == 0: plt.title(title)
+            i+=rows
+        if platform == "win32": plt.show()
+        else:
+            out_file = "output/{}.png".format(name); plt.savefig(out_file)
+            print("SAVED {}   (run \033[94mpython serve.py\033[00m to access webserver on port 8080)".format(out_file))
+
+        for net in model.layers:
+            if hasattr(net,'inp') and net.inp.net_attn_io2:
+                attn_scores = net.inp.layer_attn_io2._mem_score / metrics_loss['1steps']['steps+'][model.stopped_episode]
+                names = [spec['space_name']+'_'+spec['name'] for spec in net.inp.spec_in]
+                p = '\n'.join("{:.9f}    {}".format(float(attn_scores[i]),names[i]) for i in range(len(names)))
+                print(p, file=open("output/attn_scores {}_{}.txt".format(name,net.name),'w'))
+
+        ## save models
+        if save_model:
+            for net in model.layers:
+                model_file = model.model_files[net.name]
+                net.save_weights(model_file)
+                print("SAVED {} weights to {}".format(net.name, model_file))

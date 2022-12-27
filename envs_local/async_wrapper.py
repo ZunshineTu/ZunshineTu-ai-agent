@@ -13,4 +13,5 @@ class AsyncWrapperEnv(gym.Env):
     def __init__(self, env, env_clock, env_speed, env_render):
         super(AsyncWrapperEnv, self).__init__()
         self.env = env
-        self.action_sp
+        self.action_space = env.action_space
+        self.observation_space = env.observatio

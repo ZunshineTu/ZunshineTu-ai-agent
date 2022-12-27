@@ -9,4 +9,6 @@ import gym_util
 
 
 class AsyncWrapperEnv(gym.Env):
-    metadat
+    metadata = {'render.modes': ['human']}
+    def __init__(self, env, env_clock, env_speed, env_render):
+    

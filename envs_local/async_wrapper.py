@@ -16,4 +16,7 @@ class AsyncWrapperEnv(gym.Env):
         self.action_space = env.action_space
         self.observation_space = env.observation_space
         self.metadata = env.metadata
-        self.reward_range = env.re
+        self.reward_range = env.reward_range
+        self.spec = env.spec
+
+        np_struc = hasattr(env

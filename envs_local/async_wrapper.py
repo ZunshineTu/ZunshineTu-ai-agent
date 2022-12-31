@@ -19,4 +19,7 @@ class AsyncWrapperEnv(gym.Env):
         self.reward_range = env.reward_range
         self.spec = env.spec
 
-        np_struc = hasattr(env
+        np_struc = hasattr(env,'np_struc')
+        if np_struc: self.np_struc, self.action_dtype, self.obs_dtype = env.np_struc, env.action_dtype, env.obs_dtype
+
+        self._env_clock, self._e

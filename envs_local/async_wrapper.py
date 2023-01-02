@@ -24,4 +24,6 @@ class AsyncWrapperEnv(gym.Env):
 
         self._env_clock, self._env_speed, self._env_render, self._env_np_struc = env_clock, env_speed, env_render, np_struc
         reward_done_zero = [np.frombuffer(np.asarray(0, np.float64), dtype=np.uint8), np.frombuffer(np.asarray(False, bool), dtype=np.uint8)]
-        self._reward_done_zero
+        self._reward_done_zero = reward_done_zero
+
+        self._action_timing, self._obs_timing = False, False

@@ -29,4 +29,5 @@ class AsyncWrapperEnv(gym.Env):
         self._action_timing, self._obs_timing = False, False
         if not (isinstance(env.action_space, gym.spaces.Dict) and 'timedelta' in env.action_space.spaces):
             self._action_timing = True
-            self.action_space = gym.s
+            self.action_space = gym.spaces.Dict()
+            self.action_space.spaces['timedelta'] = gym.spaces.Box(

@@ -34,4 +34,6 @@ class AsyncWrapperEnv(gym.Env):
             self.action_space.spaces['origspace'] = env.action_space
             if np_struc: self.action_dtype = np.dtype([('timedelta', 'f8'), ('origspace', env.action_dtype)])
         if not (isinstance(env.observation_space, gym.spaces.Dict) and 'timestamp' in env.observation_space.spaces):
-     
+            self._obs_timing = True
+            self.observation_space = gym.spaces.Dict()
+    

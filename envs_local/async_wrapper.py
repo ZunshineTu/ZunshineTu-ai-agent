@@ -36,4 +36,4 @@ class AsyncWrapperEnv(gym.Env):
         if not (isinstance(env.observation_space, gym.spaces.Dict) and 'timestamp' in env.observation_space.spaces):
             self._obs_timing = True
             self.observation_space = gym.spaces.Dict()
-    
+            self.observation_space.spaces['timestamp'] = gym.spaces.Box(lo

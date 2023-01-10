@@ -37,4 +37,5 @@ class AsyncWrapperEnv(gym.Env):
             self._obs_timing = True
             self.observation_space = gym.spaces.Dict()
             self.observation_space.spaces['timestamp'] = gym.spaces.Box(low=0.0, high=np.inf, shape=(1,), dtype=np.float64)
-            self.observation_spac
+            self.observation_space.spaces['origspace'] = env.observation_space
+            if np_struc: self.obs_dtype 

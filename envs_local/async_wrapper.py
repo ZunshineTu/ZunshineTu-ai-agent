@@ -41,4 +41,4 @@ class AsyncWrapperEnv(gym.Env):
             if np_struc: self.obs_dtype = np.dtype([('timestamp', 'f8'), ('origspace', env.obs_dtype)])
 
         if np_struc:
-       
+            reward_size, done_size = np.dtype(np.float64).itemsize, np.dtype(bool).itemsize

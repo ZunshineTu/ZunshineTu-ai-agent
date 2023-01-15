@@ -46,4 +46,5 @@ class AsyncWrapperEnv(gym.Env):
             action_size, obs_size = env.action_dtype.itemsize, self.obs_dtype.itemsize + reward_size + done_size
         else:
             idx = 0; action_idxs = gym_util.space_to_bytes(env.action_space.sample(), env.action_space)
-           
+            for i in range(len(action_idxs)): idx += action_idxs[i].size; action_idxs[i] = idx
+ 

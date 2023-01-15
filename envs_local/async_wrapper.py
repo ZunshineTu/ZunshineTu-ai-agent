@@ -43,4 +43,6 @@ class AsyncWrapperEnv(gym.Env):
         if np_struc:
             reward_size, done_size = np.dtype(np.float64).itemsize, np.dtype(bool).itemsize
             self._obs_idx, self._done_idx = -(reward_size + done_size), -done_size
-            action_size, obs_size = env.action_dtype.itemsize, self.obs_dtype.itemsize 
+            action_size, obs_size = env.action_dtype.itemsize, self.obs_dtype.itemsize + reward_size + done_size
+        else:
+            idx = 0; action_idxs = g

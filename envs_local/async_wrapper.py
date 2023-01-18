@@ -50,4 +50,5 @@ class AsyncWrapperEnv(gym.Env):
             action_idxs = [0] + action_idxs
 
             idx = 0; obs_idxs = gym_util.space_to_bytes(self.observation_space.sample(), self.observation_space)
-     
+            obs_idxs += reward_done_zero
+            for i in range(len(obs

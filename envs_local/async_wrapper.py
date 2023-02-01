@@ -51,4 +51,6 @@ class AsyncWrapperEnv(gym.Env):
 
             idx = 0; obs_idxs = gym_util.space_to_bytes(self.observation_space.sample(), self.observation_space)
             obs_idxs += reward_done_zero
-            for i in range(len(obs
+            for i in range(len(obs_idxs)): idx += obs_idxs[i].size; obs_idxs[i] = idx
+            obs_idxs = [0] + obs_idxs
+

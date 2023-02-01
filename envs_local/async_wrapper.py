@@ -55,4 +55,6 @@ class AsyncWrapperEnv(gym.Env):
             obs_idxs = [0] + obs_idxs
 
             self._action_idxs, self._obs_idxs = action_idxs, obs_idxs
-  
+            action_size, obs_size = action_idxs[-1], obs_idxs[-1]
+
+        # self._lock_print

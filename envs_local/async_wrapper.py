@@ -54,3 +54,5 @@ class AsyncWrapperEnv(gym.Env):
             for i in range(len(obs_idxs)): idx += obs_idxs[i].size; obs_idxs[i] = idx
             obs_idxs = [0] + obs_idxs
 
+            self._action_idxs, self._obs_idxs = action_idxs, obs_idxs
+  

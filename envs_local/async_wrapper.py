@@ -57,4 +57,5 @@ class AsyncWrapperEnv(gym.Env):
             self._action_idxs, self._obs_idxs = action_idxs, obs_idxs
             action_size, obs_size = action_idxs[-1], obs_idxs[-1]
 
-        # self._lock_print
+        # self._lock_print = mp.Lock()
+        self._proc_ctrl = mp.Value('b', 0) # 1 = close, 0 = re

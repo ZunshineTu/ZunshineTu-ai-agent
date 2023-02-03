@@ -61,4 +61,7 @@ class AsyncWrapperEnv(gym.Env):
         self._proc_ctrl = mp.Value('b', 0) # 1 = close, 0 = reset, -1 = step, -2 = done
         self._action_shared = mp.sharedctypes.Array('B', action_size)
         self._obs_shared = mp.sharedctypes.Array('B', obs_size)
-        se
+        self._proc = mp.Process(target=self._proc_run, name='ENV', args=())
+
+
+    def _transl

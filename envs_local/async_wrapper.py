@@ -66,4 +66,6 @@ class AsyncWrapperEnv(gym.Env):
 
     def _translate_obs(self, obs, reward_done):
         if self._obs_timing:
-            timestamp = 
+            timestamp = np.float64(time.time() * self._env_speed)
+            if self._env_np_struc:
+  

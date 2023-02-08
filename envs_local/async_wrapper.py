@@ -64,4 +64,6 @@ class AsyncWrapperEnv(gym.Env):
         self._proc = mp.Process(target=self._proc_run, name='ENV', args=())
 
 
-    def _transl
+    def _translate_obs(self, obs, reward_done):
+        if self._obs_timing:
+            timestamp = 

@@ -68,4 +68,5 @@ class AsyncWrapperEnv(gym.Env):
         if self._obs_timing:
             timestamp = np.float64(time.time() * self._env_speed)
             if self._env_np_struc:
-  
+                obs = np.asarray([(timestamp, obs)], dtype=self.obs_dtype)
+      

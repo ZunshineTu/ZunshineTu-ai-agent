@@ -74,4 +74,8 @@ class AsyncWrapperEnv(gym.Env):
         if self._env_np_struc: obs = [np.frombuffer(obs, dtype=np.uint8)]
         else: obs = gym_util.space_to_bytes(obs, self.observation_space)
         obs += reward_done
-      
+        obs = np.concatenate(obs)
+        return obs
+
+    def _proc_run(self):
+        actio

@@ -71,4 +71,5 @@ class AsyncWrapperEnv(gym.Env):
                 obs = np.asarray([(timestamp, obs)], dtype=self.obs_dtype)
             else:
                 obs = OrderedDict({'timestamp': timestamp, 'origspace': obs})
-    
+        if self._env_np_struc: obs = [np.frombuffer(obs, dtype=np.uint8)]
+        else: o

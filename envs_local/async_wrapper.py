@@ -72,4 +72,6 @@ class AsyncWrapperEnv(gym.Env):
             else:
                 obs = OrderedDict({'timestamp': timestamp, 'origspace': obs})
         if self._env_np_struc: obs = [np.frombuffer(obs, dtype=np.uint8)]
-        else: o
+        else: obs = gym_util.space_to_bytes(obs, self.observation_space)
+        obs += reward_done
+      

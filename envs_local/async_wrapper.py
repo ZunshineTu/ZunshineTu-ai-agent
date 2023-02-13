@@ -78,4 +78,5 @@ class AsyncWrapperEnv(gym.Env):
         return obs
 
     def _proc_run(self):
-        actio
+        action_view = np.asarray(self._action_shared.get_obj())
+        obs_view = np.asarray(se

@@ -80,4 +80,8 @@ class AsyncWrapperEnv(gym.Env):
     def _proc_run(self):
         action_view = np.asarray(self._action_shared.get_obj())
         obs_view = np.asarray(self._obs_shared.get_obj())
-        action = np.zeros(action_view.shape, action
+        action = np.zeros(action_view.shape, action_view.dtype)
+
+        while self._proc_ctrl.value != 1:
+
+            if 

@@ -84,4 +84,6 @@ class AsyncWrapperEnv(gym.Env):
 
         while self._proc_ctrl.value != 1:
 
-            if 
+            if self._proc_ctrl.value == 0:
+                obs, info = self.env.reset()
+            

@@ -89,4 +89,5 @@ class AsyncWrapperEnv(gym.Env):
                 # print("proc reset", obs)
                 obs = self._translate_obs(obs, self._reward_done_zero)
                 with self._obs_shared.get_lock():
-                  
+                    if not np.array_equal(obs_view, obs): np.copyto(obs_view, obs, casting='no')
+             

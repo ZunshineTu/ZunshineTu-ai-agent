@@ -95,4 +95,5 @@ class AsyncWrapperEnv(gym.Env):
             elif self._proc_ctrl.value == -1:
                 with self._action_shared.get_lock():
                     if not np.array_equal(action_view, action): np.copyto(action, action_view, casting='no')
-                if self._env_np_struc: action_space = np.frombuffer(action, dtype=self.e
+                if self._env_np_struc: action_space = np.frombuffer(action, dtype=self.env.action_dtype)
+                else: action_space = gym_util.bytes_to_space(

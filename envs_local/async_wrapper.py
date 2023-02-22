@@ -94,4 +94,5 @@ class AsyncWrapperEnv(gym.Env):
 
             elif self._proc_ctrl.value == -1:
                 with self._action_shared.get_lock():
-                    if not np.array_equal(actio
+                    if not np.array_equal(action_view, action): np.copyto(action, action_view, casting='no')
+              

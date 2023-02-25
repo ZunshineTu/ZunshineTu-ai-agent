@@ -100,4 +100,5 @@ class AsyncWrapperEnv(gym.Env):
 
                 # print("proc action", action_space)
                 obs, reward, terminated, truncated, _ = self.env.step(action_space); done = (terminated or truncated)
-       
+                # print("proc step", obs)
+                reward_done = [np.frombuffer(np.asa

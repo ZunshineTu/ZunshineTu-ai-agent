@@ -99,4 +99,5 @@ class AsyncWrapperEnv(gym.Env):
                 else: action_space = gym_util.bytes_to_space(action, self.env.action_space, self._action_idxs, [0])
 
                 # print("proc action", action_space)
-                obs, reward, terminated, truncated
+                obs, reward, terminated, truncated, _ = self.env.step(action_space); done = (terminated or truncated)
+       

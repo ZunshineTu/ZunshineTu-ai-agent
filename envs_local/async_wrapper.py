@@ -103,4 +103,5 @@ class AsyncWrapperEnv(gym.Env):
                 # print("proc step", obs)
                 reward_done = [np.frombuffer(np.asarray(reward, np.float64), dtype=np.uint8), np.frombuffer(np.asarray(done, bool), dtype=np.uint8)]
                 obs = self._translate_obs(obs, reward_done)
-                with self._obs_
+                with self._obs_shared.get_lock():
+                    if not np.array_equal(obs_view, obs): 

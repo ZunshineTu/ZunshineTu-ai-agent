@@ -114,4 +114,4 @@ class AsyncWrapperEnv(gym.Env):
 
 
     # def seed(self): return self.env.seed()
-    # d
+    # def render(self, mode='human', close=False): return self.env.render(mode, c

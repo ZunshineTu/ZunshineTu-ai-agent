@@ -109,3 +109,9 @@ class AsyncWrapperEnv(gym.Env):
 
             if self._env_render: self.env.render()
             time.sleep(self._env_clock)
+
+        self.env.close()
+
+
+    # def seed(self): return self.env.seed()
+    # d

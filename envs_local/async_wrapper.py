@@ -105,4 +105,7 @@ class AsyncWrapperEnv(gym.Env):
                 obs = self._translate_obs(obs, reward_done)
                 with self._obs_shared.get_lock():
                     if not np.array_equal(obs_view, obs): np.copyto(obs_view, obs, casting='no')
-                if done: self._proc_ctrl.value 
+                if done: self._proc_ctrl.value = -2
+
+            if self._env_render: self.env.render()
+            time.sleep(self._env_clock)

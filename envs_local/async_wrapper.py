@@ -122,4 +122,7 @@ class AsyncWrapperEnv(gym.Env):
         self._proc_ctrl.value = 1
         self._proc.join()
     def reset(self):
-        obs_view = np.asarray(self._obs
+        obs_view = np.asarray(self._obs_shared.get_obj())
+        obs = np.zeros(obs_view.shape, obs_view.dtype)
+
+  

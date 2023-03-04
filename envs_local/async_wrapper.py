@@ -116,4 +116,8 @@ class AsyncWrapperEnv(gym.Env):
     # def seed(self): return self.env.seed()
     # def render(self, mode='human', close=False): return self.env.render(mode, close)
     def seed(self): return
-    def render(self, mode='human', close=False): retu
+    def render(self, mode='human', close=False): return
+
+    def close(self):
+        self._proc_ctrl.value = 1
+        self._pro

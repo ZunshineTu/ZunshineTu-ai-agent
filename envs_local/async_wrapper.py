@@ -125,4 +125,5 @@ class AsyncWrapperEnv(gym.Env):
         obs_view = np.asarray(self._obs_shared.get_obj())
         obs = np.zeros(obs_view.shape, obs_view.dtype)
 
-  
+        # if self._proc.is_alive(): self.proc_stop()
+        # self._proc = mp.Process(target=self

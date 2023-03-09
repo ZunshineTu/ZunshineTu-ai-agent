@@ -128,4 +128,5 @@ class AsyncWrapperEnv(gym.Env):
         # if self._proc.is_alive(): self.proc_stop()
         # self._proc = mp.Process(target=self._proc_run, name='ENV', args=())
         self._proc_ctrl.value = 0
-        if not self._proc.is_alive
+        if not self._proc.is_alive(): self._proc.start()
+        while self._proc_ctrl.value != -1: time.sl

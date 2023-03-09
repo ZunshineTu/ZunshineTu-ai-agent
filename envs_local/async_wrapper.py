@@ -126,4 +126,6 @@ class AsyncWrapperEnv(gym.Env):
         obs = np.zeros(obs_view.shape, obs_view.dtype)
 
         # if self._proc.is_alive(): self.proc_stop()
-        # self._proc = mp.Process(target=self
+        # self._proc = mp.Process(target=self._proc_run, name='ENV', args=())
+        self._proc_ctrl.value = 0
+        if not self._proc.is_alive

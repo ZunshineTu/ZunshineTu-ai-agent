@@ -129,4 +129,6 @@ class AsyncWrapperEnv(gym.Env):
         # self._proc = mp.Process(target=self._proc_run, name='ENV', args=())
         self._proc_ctrl.value = 0
         if not self._proc.is_alive(): self._proc.start()
-        while self._proc_ctrl.value != -1: time.sl
+        while self._proc_ctrl.value != -1: time.sleep(0.0)
+
+        with self._obs_shared.get_lock(): np.copyto(obs, obs_view, casting='

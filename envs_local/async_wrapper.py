@@ -136,4 +136,6 @@ class AsyncWrapperEnv(gym.Env):
         else: obs = gym_util.bytes_to_space(obs, self.observation_space, self._obs_idxs, [0])
         return obs, {}
 
-    def step
+    def step(self, action):
+        action_view = np.asarray(self._action_shared.get_obj())
+      

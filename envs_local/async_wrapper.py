@@ -131,4 +131,5 @@ class AsyncWrapperEnv(gym.Env):
         if not self._proc.is_alive(): self._proc.start()
         while self._proc_ctrl.value != -1: time.sleep(0.0)
 
-        with self._obs_shared.get_lock(): np.copyto(obs, obs_view, casting='
+        with self._obs_shared.get_lock(): np.copyto(obs, obs_view, casting='no')
+        if self._env_np_struc: obs = np.frombuffer(obs[:self._obs_idx], dtype=se

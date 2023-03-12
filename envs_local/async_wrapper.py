@@ -133,4 +133,7 @@ class AsyncWrapperEnv(gym.Env):
 
         with self._obs_shared.get_lock(): np.copyto(obs, obs_view, casting='no')
         if self._env_np_struc: obs = np.frombuffer(obs[:self._obs_idx], dtype=self.obs_dtype)
-        else: obs = gym_util.bytes_to_space(obs, self.observ
+        else: obs = gym_util.bytes_to_space(obs, self.observation_space, self._obs_idxs, [0])
+        return obs, {}
+
+    def step

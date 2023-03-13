@@ -141,4 +141,7 @@ class AsyncWrapperEnv(gym.Env):
         obs_view = np.asarray(self._obs_shared.get_obj())
         obs = np.zeros(obs_view.shape, obs_view.dtype)
 
-        # TODO try different ways to in
+        # TODO try different ways to include timing
+        timedelta = 0.0
+        if self._action_timing:
+          

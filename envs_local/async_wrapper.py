@@ -138,4 +138,5 @@ class AsyncWrapperEnv(gym.Env):
 
     def step(self, action):
         action_view = np.asarray(self._action_shared.get_obj())
-      
+        obs_view = np.asarray(self._obs_shared.get_obj())
+        obs = np.

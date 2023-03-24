@@ -144,4 +144,5 @@ class AsyncWrapperEnv(gym.Env):
         # TODO try different ways to include timing
         timedelta = 0.0
         if self._action_timing:
-          
+            timedelta = action['timedelta'][0] / self._env_speed
+            action = a

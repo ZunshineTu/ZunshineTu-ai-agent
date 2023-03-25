@@ -146,4 +146,6 @@ class AsyncWrapperEnv(gym.Env):
         if self._action_timing:
             timedelta = action['timedelta'][0] / self._env_speed
             action = action['origspace']
-        if self._env_np_struc: action = np.frombuffer(action, dtype=np.
+        if self._env_np_struc: action = np.frombuffer(action, dtype=np.uint8)
+        else:
+            action = gym_util.space_to_bytes(action, self.env.

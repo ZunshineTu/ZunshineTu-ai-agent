@@ -148,4 +148,6 @@ class AsyncWrapperEnv(gym.Env):
             action = action['origspace']
         if self._env_np_struc: action = np.frombuffer(action, dtype=np.uint8)
         else:
-            action = gym_util.space_to_bytes(action, self.env.
+            action = gym_util.space_to_bytes(action, self.env.action_space)
+            action = np.concatenate(action)
+        with self._action_

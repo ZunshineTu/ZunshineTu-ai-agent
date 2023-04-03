@@ -150,4 +150,5 @@ class AsyncWrapperEnv(gym.Env):
         else:
             action = gym_util.space_to_bytes(action, self.env.action_space)
             action = np.concatenate(action)
-        with self._action_
+        with self._action_shared.get_lock():
+            if not np.array_equal(action_view, action): np.co

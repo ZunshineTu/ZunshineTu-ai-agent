@@ -153,4 +153,6 @@ class AsyncWrapperEnv(gym.Env):
         with self._action_shared.get_lock():
             if not np.array_equal(action_view, action): np.copyto(action_view, action, casting='no')
         # print(timedelta)
-        time.
+        time.sleep(timedelta)
+
+        with self._obs_shared.get_lock(): np.copyto(obs, ob

@@ -157,4 +157,6 @@ class AsyncWrapperEnv(gym.Env):
 
         with self._obs_shared.get_lock(): np.copyto(obs, obs_view, casting='no')
         if self._env_np_struc:
-            reward = obs[sel
+            reward = obs[self._obs_idx:self._done_idx]
+            done = obs[self._done_idx:]
+            obs = np.frombuf

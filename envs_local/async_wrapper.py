@@ -151,4 +151,6 @@ class AsyncWrapperEnv(gym.Env):
             action = gym_util.space_to_bytes(action, self.env.action_space)
             action = np.concatenate(action)
         with self._action_shared.get_lock():
-            if not np.array_equal(action_view, action): np.co
+            if not np.array_equal(action_view, action): np.copyto(action_view, action, casting='no')
+        # print(timedelta)
+        time.

@@ -155,4 +155,6 @@ class AsyncWrapperEnv(gym.Env):
         # print(timedelta)
         time.sleep(timedelta)
 
-        with self._obs_shared.get_lock(): np.copyto(obs, ob
+        with self._obs_shared.get_lock(): np.copyto(obs, obs_view, casting='no')
+        if self._env_np_struc:
+            reward = obs[sel

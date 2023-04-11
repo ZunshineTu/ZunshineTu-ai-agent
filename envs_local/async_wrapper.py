@@ -161,4 +161,5 @@ class AsyncWrapperEnv(gym.Env):
             done = obs[self._done_idx:]
             obs = np.frombuffer(obs[:self._obs_idx], dtype=self.obs_dtype)
         else:
-            re
+            reward = obs[self._obs_idxs[-3]:self._obs_idxs[-2]]
+            done = obs[self

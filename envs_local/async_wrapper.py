@@ -169,4 +169,6 @@ class AsyncWrapperEnv(gym.Env):
         return obs, reward, done, False, {}
 
 if __name__ == '__main__':
-    ## tes
+    ## test
+    # env = gym.make('CartPole-v0'); env.observation_space.dtype = np.dtype('float64')
+ 

@@ -171,4 +171,5 @@ class AsyncWrapperEnv(gym.Env):
 if __name__ == '__main__':
     ## test
     # env = gym.make('CartPole-v0'); env.observation_space.dtype = np.dtype('float64')
- 
+    import random_env as env_; env = env_.RandomEnv(True)
+    env = AsyncWrapp

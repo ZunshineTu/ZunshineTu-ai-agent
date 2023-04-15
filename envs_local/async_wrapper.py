@@ -166,4 +166,7 @@ class AsyncWrapperEnv(gym.Env):
             obs = gym_util.bytes_to_space(obs, self.observation_space, self._obs_idxs, [0])
         reward = np.frombuffer(reward, dtype=np.float64).item()
         done = np.frombuffer(done, dtype=bool).item()
-    
+        return obs, reward, done, False, {}
+
+if __name__ == '__main__':
+    ## tes

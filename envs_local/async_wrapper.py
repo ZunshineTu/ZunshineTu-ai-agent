@@ -175,4 +175,5 @@ if __name__ == '__main__':
     env = AsyncWrapperEnv(env, 0, 1.0, False)
     obs, info = env.reset()
     # print("main reset", obs)
-  
+    if hasattr(env,'np_struc'):
+        action = np.random.randint(32, size=env.action_dtyp

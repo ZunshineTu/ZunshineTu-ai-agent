@@ -176,4 +176,5 @@ if __name__ == '__main__':
     obs, info = env.reset()
     # print("main reset", obs)
     if hasattr(env,'np_struc'):
-        action = np.random.randint(32, size=env.action_dtyp
+        action = np.random.randint(32, size=env.action_dtype.itemsize, dtype=np.uint8)
+        action = np.frombuffer(action, dtype=env

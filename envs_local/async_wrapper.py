@@ -180,4 +180,5 @@ if __name__ == '__main__':
         action = np.frombuffer(action, dtype=env.action_dtype)
     else:
         action = env.action_space.sample()
-    # print("main actio
+    # print("main action", action)
+    obs, reward, terminated, truncated, info = env.step(a

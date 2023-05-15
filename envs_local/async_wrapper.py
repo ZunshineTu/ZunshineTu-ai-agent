@@ -181,4 +181,7 @@ if __name__ == '__main__':
     else:
         action = env.action_space.sample()
     # print("main action", action)
-    obs, reward, terminated, truncated, info = env.step(a
+    obs, reward, terminated, truncated, info = env.step(action)
+    # print("main step ", obs)
+    env.close()
+    print("done")

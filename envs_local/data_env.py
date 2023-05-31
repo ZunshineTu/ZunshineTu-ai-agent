@@ -84,3 +84,64 @@ class DataEnv(gym.Env):
                 print("\n\n-----------------------------------------------------------------------------------------------------------------")
                 print(text)
             self.item_accu = []
+        else:
+            self.item_accu.append(action)
+
+    def _request(self, action):
+        reward, done, info = np.float64(0.0), False, {}
+        # obs = self.observation_space.sample()
+        # reward = np.float64(np.random.standard_normal())
+
+        # obs = {'timestamp':np.asarray([self.ds_idx], np.float64), 'data':self.ds[self.ds_idx]}
+        obs = OrderedDict()
+        # obs['timestamp'] = np.asarray([self.ds_idx], self.observation_space['timestamp'].dtype)
+        obs['data'] = np.asarray(self.ds[self.ds_idx], self.observation_space['data'].dtype)
+        # latent = np.concatenate([self.ds[self.ds_idx]])
+        # latent = np.concatenate([self.ds[self.ds_idx],[self.ds_idx]]) # combine to latent
+        # obs['data'] = np.asarray(latent, self.observation_space['data'].dtype) # combine to latent
+        # obs['target'] = np.asarray(self.ds[self.ds_idx+1], self.observation_space['data'].dtype) # PG shkspr img tests
+        if self.data_src == 'shkspr':
+            if action is not None: # predict next byte
+                # obs_prev = self.ds[self.ds_idx-1]
+                action = action['data'][0] if isinstance(action['data'], np.ndarray) else action['data']
+                # target = obs['data'][0] if isinstance(obs['data'], np.ndarray) else obs['data'] # _data-pred
+                obs_prev = np.asarray(self.ds[self.ds_idx-1], self.observation_space['data'].dtype) # _data-same
+                target = obs_prev[0] if isinstance(obs_prev, np.ndarray) else obs_prev # _data-same
+                # if action >= 122: print(action, self.episode)
+                if action == target: reward = np.float64(1.0)
+            else: self.episode += 1
+            self.ds_idx += 1
+            if self.ds_idx >= self.ds_max:
+                done = True
+        # if self.data_src == 'mnist':
+        #     obs = obs[self.pxl_x, self.pxl_y]
+        #     if action is not None:
+        #         # action = np.asarray([action], self.dsl.dtype)
+        #         # if action == self.dsl[self.ds_idx-1]: reward = np.float64(1.0)
+        #         action = np.asarray([action], np.uint8)
+        #         if action == obs: reward = np.float64(1.0)
+        #     # TODO add ds_idx, pxl_x, pxl_y to obs
+        #     self.pxl_x += 1
+        #     if self.pxl_x >= self.x_max:
+        #         self.pxl_x = 0; self.pxl_y += 1
+        #         if self.pxl_y >= self.y_max:
+        #             self.pxl_y = 0; self.ds_idx += 1; done = True
+
+        if self.ds_idx >= self.ds_max:
+            self.ds_idx = 0
+            # self.ds_max += 64 # _data-Nrpt
+            # if self.ds_max > len(self.ds): self.ds_idx, self.ds_max = 0, 64 # _data-Nrpt
+            # self.ds_idx = np.random.randint(0,len(self.ds)-64); self.ds_max = self.ds_idx + 64 # _data-rnd
+
+
+        self.state = (action, obs, reward, done, info)
+        return obs, reward, done, False, info
+
+if __name__ == '__main__':
+    ## test
+    env = DataEnv('shkspr')
+    obs, info = env.reset()
+    env.render()
+    action = env.action_space.sample()
+    obs, reward, terminated, truncated, info = env.step(action)
+    env.render()

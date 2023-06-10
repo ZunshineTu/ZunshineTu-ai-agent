@@ -9,4 +9,6 @@ import gym_util
 #     pass
 
 class RandomEnv(gym.Env):
-    metadata =
+    metadata = {'render.modes': ['human']}
+    def __init__(self, env_np_struc):
+  

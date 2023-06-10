@@ -11,4 +11,5 @@ import gym_util
 class RandomEnv(gym.Env):
     metadata = {'render.modes': ['human']}
     def __init__(self, env_np_struc):
-  
+        super(RandomEnv, self).__init__()
+        self.observation_space = self._observa

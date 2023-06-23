@@ -15,4 +15,5 @@ class RandomEnv(gym.Env):
         self.observation_space = self._observation_space()
         self.action_space = self._action_space()
         self.reward_range = (-np.inf,+np.inf)
-        # self.obs_zero = gym.spaces.flatten(self.observation_space, self.observation_space.sample
+        # self.obs_zero = gym.spaces.flatten(self.observation_space, self.observation_space.sample())
+        # self.action_spec, self.action_zero, self.action_zero_out = gym_util.get_spec(self.

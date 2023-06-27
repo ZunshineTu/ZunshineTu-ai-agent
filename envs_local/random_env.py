@@ -20,4 +20,6 @@ class RandomEnv(gym.Env):
         # self.obs_spec, self.obs_zero, self.obs_zero_out = gym_util.get_spec(self.observation_space)
         # obs_dtype = gym_space_to_dtype(self.observation_space)
         # action_smpl = self.action_space.sample()
-        # obs_smpl = sel
+        # obs_smpl = self.observation_space.sample()
+
+        if env_np_struc: self.np_struc

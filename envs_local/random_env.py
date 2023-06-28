@@ -22,4 +22,7 @@ class RandomEnv(gym.Env):
         # action_smpl = self.action_space.sample()
         # obs_smpl = self.observation_space.sample()
 
-        if env_np_struc: self.np_struc
+        if env_np_struc: self.np_struc = True
+        if env_np_struc:
+            action_dtype = self._action_space_struc()
+ 

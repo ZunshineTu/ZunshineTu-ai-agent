@@ -27,4 +27,7 @@ class RandomEnv(gym.Env):
             action_dtype = self._action_space_struc()
             obs_dtype = self._obs_space_struc()
             self.action_dtype, self.obs_dtype = action_dtype, obs_dtype
-            action_zero = np.zeros((1,), self.a
+            action_zero = np.zeros((1,), self.action_dtype)
+            obs_zero = np.zeros((1,), self.obs_dtype)
+        else:
+    

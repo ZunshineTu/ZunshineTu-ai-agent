@@ -30,4 +30,5 @@ class RandomEnv(gym.Env):
             action_zero = np.zeros((1,), self.action_dtype)
             obs_zero = np.zeros((1,), self.obs_dtype)
         else:
-    
+            action_zero = gym_util.get_space_zero(self.action_space)
+            obs_zero = gym_util.get_

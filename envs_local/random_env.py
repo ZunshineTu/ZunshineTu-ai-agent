@@ -32,4 +32,6 @@ class RandomEnv(gym.Env):
         else:
             action_zero = gym_util.get_space_zero(self.action_space)
             obs_zero = gym_util.get_space_zero(self.observation_space)
-        self.action_zero, self.obs_zero = a
+        self.action_zero, self.obs_zero = action_zero, obs_zero
+
+        self.state = self.action_zero, self.obs_zer

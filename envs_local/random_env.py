@@ -34,4 +34,7 @@ class RandomEnv(gym.Env):
             obs_zero = gym_util.get_space_zero(self.observation_space)
         self.action_zero, self.obs_zero = action_zero, obs_zero
 
-        self.state = self.action_zero, self.obs_zer
+        self.state = self.action_zero, self.obs_zero, np.float64(0.0), False, {}
+
+    def step(self, action):
+        return self._request(act

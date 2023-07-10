@@ -37,4 +37,7 @@ class RandomEnv(gym.Env):
         self.state = self.action_zero, self.obs_zero, np.float64(0.0), False, {}
 
     def step(self, action):
-        return self._request(act
+        return self._request(action)
+    def reset(self):
+        return self._request(None)[0], {}
+    def render(self, mode='human'

@@ -40,4 +40,6 @@ class RandomEnv(gym.Env):
         return self._request(action)
     def reset(self):
         return self._request(None)[0], {}
-    def render(self, mode='human'
+    def render(self, mode='human', close=False):
+        action, obs, reward, done, info = self.state
+    

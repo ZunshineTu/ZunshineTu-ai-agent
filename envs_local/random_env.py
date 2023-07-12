@@ -42,4 +42,5 @@ class RandomEnv(gym.Env):
         return self._request(None)[0], {}
     def render(self, mode='human', close=False):
         action, obs, reward, done, info = self.state
-    
+        if action is None: print("{}\n".format(obs))
+        else: print("{}\t\t--

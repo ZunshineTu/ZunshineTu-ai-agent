@@ -43,4 +43,6 @@ class RandomEnv(gym.Env):
     def render(self, mode='human', close=False):
         action, obs, reward, done, info = self.state
         if action is None: print("{}\n".format(obs))
-        else: print("{}\t\t--
+        else: print("{}\t\t--> {:.18f}{}\n{}\n".format(action, reward, (' DONE!' if done else ''), obs))
+
+

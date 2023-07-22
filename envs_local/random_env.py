@@ -48,4 +48,6 @@ class RandomEnv(gym.Env):
 
 
     def _action_space(self):
-        # return gym.spaces.Dict({ # sorted by 
+        # return gym.spaces.Dict({ # sorted by name
+        #     'six': gym.spaces.Discrete(6), # int
+        #     'bin': g

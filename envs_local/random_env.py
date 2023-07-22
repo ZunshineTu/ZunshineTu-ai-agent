@@ -50,4 +50,5 @@ class RandomEnv(gym.Env):
     def _action_space(self):
         # return gym.spaces.Dict({ # sorted by name
         #     'six': gym.spaces.Discrete(6), # int
-        #     'bin': g
+        #     'bin': gym.spaces.MultiBinary(6), # np.ndarray([1, 0, 1, 0, 0, 1], dtype=int8)
+        #  

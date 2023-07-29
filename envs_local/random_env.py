@@ -52,4 +52,7 @@ class RandomEnv(gym.Env):
         #     'six': gym.spaces.Discrete(6), # int
         #     'bin': gym.spaces.MultiBinary(6), # np.ndarray([1, 0, 1, 0, 0, 1], dtype=int8)
         #     'mul': gym.spaces.MultiDiscrete([6,2]), # np.ndarray([3, 0], dtype=int64)
-        #     'val': gym.spaces.Box(low=0, high=np.inf, shape=(), dtype=np.float64)} # np.ndarray(2.2274436
+        #     'val': gym.spaces.Box(low=0, high=np.inf, shape=(), dtype=np.float64)} # np.ndarray(2.22744361)
+        # )
+        # return gym.spaces.Discrete(6)
+        # return gym.spaces.Mult

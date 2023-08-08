@@ -58,4 +58,5 @@ class RandomEnv(gym.Env):
         # return gym.spaces.MultiDiscrete([6,2])
         # return gym.spaces.MultiBinary(6)
         # return gym.spaces.Tuple((gym.spaces.Discrete(6), gym.spaces.MultiBinary(6)))
-   
+        # return gym.spaces.Box(low=0, high=255, shape=(2,), dtype=np.uint8)
+        # retu

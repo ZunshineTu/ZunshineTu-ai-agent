@@ -61,4 +61,6 @@ class RandomEnv(gym.Env):
         # return gym.spaces.Box(low=0, high=255, shape=(2,), dtype=np.uint8)
         # return gym.spaces.Box(low=0.0, high=np.inf, shape=(2,), dtype=np.float64)
 
-        # ac
+        # action_space = gym.spaces.Tuple([])
+
+        # action_space.spaces.append(gym.s

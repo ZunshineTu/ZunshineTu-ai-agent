@@ -65,4 +65,6 @@ class RandomEnv(gym.Env):
 
         # action_space.spaces.append(gym.spaces.Discrete(4))
 
-        # action_space_sub = gym.spaces.Tupl
+        # action_space_sub = gym.spaces.Tuple([])
+        # action_space_sub.spaces.append(gym.spaces.Discrete(8))
+        

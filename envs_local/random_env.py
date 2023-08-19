@@ -74,4 +74,8 @@ class RandomEnv(gym.Env):
 
         # action_space_sub2 = gym.spaces.Dict()
         # action_space_sub2.spaces['test'] = gym.spaces.Box(low=0.0, high=np.inf, shape=(2,), dtype=np.float64)
-        # action_space.spaces.append(action_s
+        # action_space.spaces.append(action_space_sub2)
+
+        action_space = gym.spaces.Dict()
+
+        action_

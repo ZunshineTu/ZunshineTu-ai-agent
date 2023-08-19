@@ -78,4 +78,5 @@ class RandomEnv(gym.Env):
 
         action_space = gym.spaces.Dict()
 
-        action_
+        action_space.spaces['dt_sub'] = gym.spaces.Dict()
+        action_space.spaces

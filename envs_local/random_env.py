@@ -84,4 +84,4 @@ class RandomEnv(gym.Env):
 
         action_space.spaces['byte'] = gym.spaces.Box(low=0, high=255, shape=(1,), dtype=np.uint8)
         action_space.spaces['2Darray'] = gym.spaces.Box(low=0, high=255, shape=(2,3), dtype=np.uint8)
-        actio
+        action_space.spaces['3Darray'] = gym.spaces.Box(low=0, high=255, shape=(3,3,3),

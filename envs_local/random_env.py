@@ -87,4 +87,5 @@ class RandomEnv(gym.Env):
         action_space.spaces['3Darray'] = gym.spaces.Box(low=0, high=255, shape=(3,3,3), dtype=np.int32)
         action_space.spaces['discrete6'] = gym.spaces.Discrete(6)
         # action_space.spaces['multidiscrete2x6'] = gym.spaces.MultiDiscrete([6,6]) # TODO
-        action_space.spaces['float64'] = gym.spaces.Box(low=0.0, high=np.inf, shape=(1,), dt
+        action_space.spaces['float64'] = gym.spaces.Box(low=0.0, high=np.inf, shape=(1,), dtype=np.float64)
+        action_space.spaces['bools'] = gym.spaces.Box(low=0, high=

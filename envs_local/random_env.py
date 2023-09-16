@@ -88,4 +88,10 @@ class RandomEnv(gym.Env):
         action_space.spaces['discrete6'] = gym.spaces.Discrete(6)
         # action_space.spaces['multidiscrete2x6'] = gym.spaces.MultiDiscrete([6,6]) # TODO
         action_space.spaces['float64'] = gym.spaces.Box(low=0.0, high=np.inf, shape=(1,), dtype=np.float64)
-        action_space.spaces['bools'] = gym.spaces.Box(low=0, high=
+        action_space.spaces['bools'] = gym.spaces.Box(low=0, high=1, shape=(5,), dtype=bool)
+
+
+        return action_space
+
+    def _action_space_struc(self):
+    

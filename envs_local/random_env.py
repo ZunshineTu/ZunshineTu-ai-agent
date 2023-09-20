@@ -94,4 +94,6 @@ class RandomEnv(gym.Env):
         return action_space
 
     def _action_space_struc(self):
-    
+        dt_sub = np.dtype([
+            ('float64', np.float64, (2,)),
+            ('byte', 

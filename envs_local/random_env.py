@@ -100,4 +100,6 @@ class RandomEnv(gym.Env):
         ])
         dtype = np.dtype([
             ('dt_sub', dt_sub),
-   
+            ('byte', np.uint8),
+            ('2Darray', np.uint8, (2,3)),
+      

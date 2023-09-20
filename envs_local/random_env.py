@@ -102,4 +102,7 @@ class RandomEnv(gym.Env):
             ('dt_sub', dt_sub),
             ('byte', np.uint8),
             ('2Darray', np.uint8, (2,3)),
-      
+            ('3Darray', np.int32, (3,3,3)),
+            ('discrete6', np.int64),
+            ('float64', np.float64),
+ 

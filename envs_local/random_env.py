@@ -105,4 +105,9 @@ class RandomEnv(gym.Env):
             ('3Darray', np.int32, (3,3,3)),
             ('discrete6', np.int64),
             ('float64', np.float64),
- 
+            ('bools', bool, (5,)),
+        ])
+        return dtype
+
+
+

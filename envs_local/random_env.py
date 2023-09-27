@@ -111,3 +111,6 @@ class RandomEnv(gym.Env):
 
 
 
+    def _observation_space(self):
+        # return gym.spaces.Dict({ # sorted by name
+        #     

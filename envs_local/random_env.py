@@ -118,4 +118,5 @@ class RandomEnv(gym.Env):
         #     'text': gym.spaces.Box(low=0, high=255, shape=(16,), dtype=np.uint8),
         #     'features': gym.spaces.Box(low=-np.inf, high=np.inf, shape=(4,), dtype=np.float64),
         # })
-        # return gym.spaces.Dict({'six': gym.spaces.Discrete(6), '
+        # return gym.spaces.Dict({'six': gym.spaces.Discrete(6), 'bin': gym.spaces.MultiBinary(6)})
+        # return gym.spaces.Box(low=0, high=255, shape=(8,), dtype

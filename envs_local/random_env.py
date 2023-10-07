@@ -116,4 +116,6 @@ class RandomEnv(gym.Env):
         #     # 'minst': gym.spaces.Box(low=0, high=255, shape=(28,28), dtype=np.uint8),
         #     'matrix': gym.spaces.Box(low=0.0, high=np.inf, shape=(4,4), dtype=np.float64),
         #     'text': gym.spaces.Box(low=0, high=255, shape=(16,), dtype=np.uint8),
-        #     'features': gym.spaces.Box(low=-np.inf, high=np.inf, shape=(4,), dtype=np.flo
+        #     'features': gym.spaces.Box(low=-np.inf, high=np.inf, shape=(4,), dtype=np.float64),
+        # })
+        # return gym.spaces.Dict({'six': gym.spaces.Discrete(6), '

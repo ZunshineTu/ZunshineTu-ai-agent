@@ -122,4 +122,7 @@ class RandomEnv(gym.Env):
         # return gym.spaces.Box(low=0, high=255, shape=(8,), dtype=np.uint8)
         # return gym.spaces.Box(low=0.0, high=1.0, shape=(4,), dtype=np.float32)
         # return gym.spaces.Box(low=0.0, high=np.inf, shape=(4,), dtype=np.float64)
-        # return gym.spaces.Box(low=-np.inf, high=np.in
+        # return gym.spaces.Box(low=-np.inf, high=np.inf, shape=(4,), dtype=np.float64)
+
+        # obs_space = gym.spaces.Dict()
+        # obs_

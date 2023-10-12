@@ -128,4 +128,5 @@ class RandomEnv(gym.Env):
         # obs_space.spaces['timestamp'] = gym.spaces.Box(low=0.0, high=np.inf, shape=(1,), dtype=np.float64)
         # obs_space.spaces['data'] = gym.spaces.Box(low=0, high=255, shape=(2,), dtype=np.uint8)
 
-        # obs_sp
+        # obs_space_sub = gym.spaces.Tuple([])
+        # obs_space_sub.spaces.append(gym.spaces.Dis

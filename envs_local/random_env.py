@@ -130,4 +130,5 @@ class RandomEnv(gym.Env):
 
         # obs_space_sub = gym.spaces.Tuple([])
         # obs_space_sub.spaces.append(gym.spaces.Discrete(8))
-        # obs_space_sub.spaces.append(gym.spaces.Box(low=0, hi
+        # obs_space_sub.spaces.append(gym.spaces.Box(low=0, high=255, shape=(3,2), dtype=np.uint8))
+        # obs_space.spaces['extra'] = obs_space

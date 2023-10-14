@@ -139,4 +139,5 @@ class RandomEnv(gym.Env):
         obs_space.spaces['2Darray'] = gym.spaces.Box(low=0, high=255, shape=(2,3), dtype=np.uint8)
         obs_space.spaces['float32'] = gym.spaces.Box(low=0.0, high=1.0, shape=(1,), dtype=np.float32)
         obs_space.spaces['discrete6'] = gym.spaces.Discrete(6)
-        # ob
+        # obs_space.spaces['multidiscrete2x6'] = gym.spaces.MultiDiscrete([6,6]) # TODO
+        obs_space.spaces['floa

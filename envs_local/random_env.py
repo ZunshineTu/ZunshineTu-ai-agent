@@ -141,4 +141,4 @@ class RandomEnv(gym.Env):
         obs_space.spaces['discrete6'] = gym.spaces.Discrete(6)
         # obs_space.spaces['multidiscrete2x6'] = gym.spaces.MultiDiscrete([6,6]) # TODO
         obs_space.spaces['float64'] = gym.spaces.Box(low=np.NINF, high=np.inf, shape=(1,), dtype=np.float64)
-     
+        obs_space.spaces['bools'] = gym.spaces.Box(low=0, high=1, shape=(5,), dtype=bo

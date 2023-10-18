@@ -144,4 +144,5 @@ class RandomEnv(gym.Env):
         obs_space.spaces['bools'] = gym.spaces.Box(low=0, high=1, shape=(5,), dtype=bool)
         obs_space.spaces['image'] = gym.spaces.Box(low=0, high=255, shape=(3,3,3), dtype=np.uint8)
         for i in range(2):
-            obs_sp
+            obs_space.spaces['v'+str(i)] = gym.spaces.Dict()
+            obs_space.spaces

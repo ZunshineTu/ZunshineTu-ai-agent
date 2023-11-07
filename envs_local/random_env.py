@@ -149,4 +149,8 @@ class RandomEnv(gym.Env):
             obs_space.spaces['v'+str(i)].spaces['byte'] = gym.spaces.Box(low=0, high=255, shape=(1,), dtype=np.uint8)
             obs_space.spaces['t'+str(i)] = gym.spaces.Dict()
             obs_space.spaces['t'+str(i)].spaces['float16'] = gym.spaces.Box(low=np.NINF, high=np.inf, shape=(3,1), dtype=np.float16)
-            obs_space.spaces['t'+str(i)].spaces['byte'] = gym.sp
+            obs_space.spaces['t'+str(i)].spaces['byte'] = gym.spaces.Box(low=0, high=255, shape=(3,), dtype=np.uint8)
+
+        return obs_space
+
+    def _obs_

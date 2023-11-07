@@ -153,4 +153,7 @@ class RandomEnv(gym.Env):
 
         return obs_space
 
-    def _obs_
+    def _obs_space_struc(self):
+        types = [
+            # ('timestamp', np.float64),
+            ('

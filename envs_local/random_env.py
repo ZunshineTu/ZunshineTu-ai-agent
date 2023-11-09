@@ -160,4 +160,6 @@ class RandomEnv(gym.Env):
             ('2Darray', np.uint8, (2,3)),
             ('float32', np.float32),
             ('discrete6', np.int64),
-            ('float64', np.float64, (1,
+            ('float64', np.float64, (1,)),
+            ('bools', bool, (5,)),
+            ('image', np.uint8, (3,3

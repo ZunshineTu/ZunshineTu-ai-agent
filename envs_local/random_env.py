@@ -158,4 +158,6 @@ class RandomEnv(gym.Env):
             # ('timestamp', np.float64),
             ('byte', np.uint8),
             ('2Darray', np.uint8, (2,3)),
-            ('float32',
+            ('float32', np.float32),
+            ('discrete6', np.int64),
+            ('float64', np.float64, (1,

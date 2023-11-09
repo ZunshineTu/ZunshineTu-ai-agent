@@ -156,4 +156,6 @@ class RandomEnv(gym.Env):
     def _obs_space_struc(self):
         types = [
             # ('timestamp', np.float64),
-            ('
+            ('byte', np.uint8),
+            ('2Darray', np.uint8, (2,3)),
+            ('float32',

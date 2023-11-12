@@ -162,4 +162,8 @@ class RandomEnv(gym.Env):
             ('discrete6', np.int64),
             ('float64', np.float64, (1,)),
             ('bools', bool, (5,)),
-            ('image', np.uint8, (3,3
+            ('image', np.uint8, (3,3,3)),
+        ]
+        dt_sub = np.dtype([
+            ('float64', np.float64, (1,)),
+    

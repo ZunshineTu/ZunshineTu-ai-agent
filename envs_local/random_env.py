@@ -166,4 +166,7 @@ class RandomEnv(gym.Env):
         ]
         dt_sub = np.dtype([
             ('float64', np.float64, (1,)),
-    
+            ('byte', np.uint8),
+        ])
+        dt_itm = np.dtype([
+            ('float1

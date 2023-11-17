@@ -173,4 +173,5 @@ class RandomEnv(gym.Env):
             ('byte', np.uint8, (3,)),
         ])
         for i in range(2):
-  
+            types.append(('v'+str(i), dt_sub))
+            types.append(('t'+str(i), dt_itm)

@@ -174,4 +174,10 @@ class RandomEnv(gym.Env):
         ])
         for i in range(2):
             types.append(('v'+str(i), dt_sub))
-            types.append(('t'+str(i), dt_itm)
+            types.append(('t'+str(i), dt_itm))
+        dtype = np.dtype(types)
+        return dtype
+
+
+
+    def _requ

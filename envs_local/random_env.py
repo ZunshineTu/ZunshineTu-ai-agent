@@ -180,4 +180,6 @@ class RandomEnv(gym.Env):
 
 
 
-    def _requ
+    def _request(self, action):
+        obs = self.obs_zero
+        reward = np.float64(0.

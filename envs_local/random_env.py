@@ -182,4 +182,8 @@ class RandomEnv(gym.Env):
 
     def _request(self, action):
         obs = self.obs_zero
-        reward = np.float64(0.
+        reward = np.float64(0.0)
+        done = False
+        info = {}
+
+        # if action is None: print("

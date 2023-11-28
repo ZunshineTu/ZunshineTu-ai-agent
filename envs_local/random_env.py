@@ -190,4 +190,6 @@ class RandomEnv(gym.Env):
 
         if hasattr(self,'np_struc'):
             obs = np.random.randint(32, size=self.obs_dtype.itemsize, dtype=np.uint8)
-            obs = np.frombuffer(ob
+            obs = np.frombuffer(obs, dtype=self.obs_dtype)
+            obs[0][3] = np.random.randint(6)
+            obs[0][5] = obs[

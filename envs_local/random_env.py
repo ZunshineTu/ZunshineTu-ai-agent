@@ -189,4 +189,5 @@ class RandomEnv(gym.Env):
         # if action is None: print("RandomEnv reset")
 
         if hasattr(self,'np_struc'):
-            obs = np.random.rand
+            obs = np.random.randint(32, size=self.obs_dtype.itemsize, dtype=np.uint8)
+            obs = np.frombuffer(ob

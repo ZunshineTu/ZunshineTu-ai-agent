@@ -186,4 +186,7 @@ class RandomEnv(gym.Env):
         done = False
         info = {}
 
-        # if action is None: print("
+        # if action is None: print("RandomEnv reset")
+
+        if hasattr(self,'np_struc'):
+            obs = np.random.rand

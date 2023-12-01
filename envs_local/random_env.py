@@ -196,4 +196,5 @@ class RandomEnv(gym.Env):
             # obs = np.zeros((1,), self.obs_dtype)
             # # obs = np.where(np.isnan(obs), 0, obs)
         else:
-          
+            obs = self.observation_space.sample()
+            # obs = gym.spaces

@@ -198,4 +198,5 @@ class RandomEnv(gym.Env):
         else:
             obs = self.observation_space.sample()
             # obs = gym.spaces.flatten(self.observation_space, self.observation_space.sample())
-       
+            # obs = {
+            #     'matrix': np.random.pareto(1.0, size=(4,4

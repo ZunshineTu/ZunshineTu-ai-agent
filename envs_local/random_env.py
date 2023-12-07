@@ -202,4 +202,5 @@ class RandomEnv(gym.Env):
             #     'matrix': np.random.pareto(1.0, size=(4,4)),
             #     'text': np.random.randint(low=0, high=256, size=(16,), dtype=np.uint8),
             #     'features': np.random.normal(0.0, 1.0, size=(4,)),
-            #
+            # }
+            # obs = np.zeros(shape=self.observation_space.shape, dtype=self.obser

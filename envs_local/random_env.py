@@ -205,4 +205,5 @@ class RandomEnv(gym.Env):
             # }
             # obs = np.zeros(shape=self.observation_space.shape, dtype=self.observation_space.dtype)
         reward = np.float64(np.random.standard_normal())
-     
+        # reward = np.float64(np.random.standard_cauchy())
+        if np.

@@ -209,4 +209,10 @@ class RandomEnv(gym.Env):
         if np.random.randint(10) >= 9: done = True
 
         self.state = (action, obs, reward, done, info)
- 
+        return obs, reward, done, False, info
+
+
+
+if __name__ == '__main__':
+    ## test
+    e

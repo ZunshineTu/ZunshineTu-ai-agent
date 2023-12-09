@@ -203,4 +203,6 @@ class RandomEnv(gym.Env):
             #     'text': np.random.randint(low=0, high=256, size=(16,), dtype=np.uint8),
             #     'features': np.random.normal(0.0, 1.0, size=(4,)),
             # }
-            # obs = np.zeros(shape=self.observation_space.shape, dtype=self.obser
+            # obs = np.zeros(shape=self.observation_space.shape, dtype=self.observation_space.dtype)
+        reward = np.float64(np.random.standard_normal())
+     

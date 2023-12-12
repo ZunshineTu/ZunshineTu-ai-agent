@@ -220,4 +220,5 @@ if __name__ == '__main__':
     obs, info = env.reset()
     # env.render()
     if hasattr(env,'np_struc'):
-        # test_spec, test_obs_zero, test_obs_ze
+        # test_spec, test_obs_zero, test_obs_zero_out = gym_util.get_spec(env.observation_space, compute_dtype='float32')
+       

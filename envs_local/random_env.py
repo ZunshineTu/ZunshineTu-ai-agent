@@ -219,4 +219,5 @@ if __name__ == '__main__':
     env = RandomEnv(env_np_struc)
     obs, info = env.reset()
     # env.render()
-    
+    if hasattr(env,'np_struc'):
+        # test_spec, test_obs_zero, test_obs_ze

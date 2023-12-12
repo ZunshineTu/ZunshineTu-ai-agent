@@ -215,4 +215,8 @@ class RandomEnv(gym.Env):
 
 if __name__ == '__main__':
     ## test
-    e
+    env_np_struc = True
+    env = RandomEnv(env_np_struc)
+    obs, info = env.reset()
+    # env.render()
+    

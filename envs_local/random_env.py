@@ -221,4 +221,6 @@ if __name__ == '__main__':
     # env.render()
     if hasattr(env,'np_struc'):
         # test_spec, test_obs_zero, test_obs_zero_out = gym_util.get_spec(env.observation_space, compute_dtype='float32')
-       
+        # test_obs = gym_struc_to_feat(obs)
+
+        action = np.random.randint

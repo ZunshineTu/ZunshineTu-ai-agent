@@ -224,4 +224,5 @@ if __name__ == '__main__':
         # test_obs = gym_struc_to_feat(obs)
 
         action = np.random.randint(32, size=env.action_dtype.itemsize, dtype=np.uint8)
-        action =
+        action = np.frombuffer(action, dtype=env.action_dtype)
+        # action = np.zeros(

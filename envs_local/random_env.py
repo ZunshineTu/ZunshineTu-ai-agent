@@ -225,4 +225,6 @@ if __name__ == '__main__':
 
         action = np.random.randint(32, size=env.action_dtype.itemsize, dtype=np.uint8)
         action = np.frombuffer(action, dtype=env.action_dtype)
-        # action = np.zeros(
+        # action = np.zeros((2,), env.action_dtype)
+        # print("{}".format(action))
+        test_out = gym_

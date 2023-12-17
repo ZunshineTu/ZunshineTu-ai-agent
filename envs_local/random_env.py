@@ -227,4 +227,6 @@ if __name__ == '__main__':
         action = np.frombuffer(action, dtype=env.action_dtype)
         # action = np.zeros((2,), env.action_dtype)
         # print("{}".format(action))
-        test_out = gym_
+        test_out = gym_util.struc_to_feat(action)
+        # print("{}".format(test_out))
+        tes

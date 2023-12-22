@@ -232,4 +232,5 @@ if __name__ == '__main__':
         test_action = gym_util.out_to_struc(test_out, env.action_dtype)
         # print("{}".format(test_action))
     else:
-        test_spec, test_obs_zero, test_obs_zero_ou
+        test_spec, test_obs_zero, test_obs_zero_out = gym_util.get_spec(env.observation_space, compute_dtype='float32')
+        test

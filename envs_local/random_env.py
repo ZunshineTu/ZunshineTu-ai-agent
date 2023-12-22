@@ -229,4 +229,5 @@ if __name__ == '__main__':
         # print("{}".format(action))
         test_out = gym_util.struc_to_feat(action)
         # print("{}".format(test_out))
-        tes
+        test_action = gym_util.out_to_struc(test_out, env.action_dtype)
+        # print("{}".forma

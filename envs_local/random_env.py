@@ -230,4 +230,6 @@ if __name__ == '__main__':
         test_out = gym_util.struc_to_feat(action)
         # print("{}".format(test_out))
         test_action = gym_util.out_to_struc(test_out, env.action_dtype)
-        # print("{}".forma
+        # print("{}".format(test_action))
+    else:
+        test_spec, test_obs_zero, test_obs_zero_ou

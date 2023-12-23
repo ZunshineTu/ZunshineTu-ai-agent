@@ -233,4 +233,6 @@ if __name__ == '__main__':
         # print("{}".format(test_action))
     else:
         test_spec, test_obs_zero, test_obs_zero_out = gym_util.get_spec(env.observation_space, compute_dtype='float32')
-        test
+        test_obs = gym_util.space_to_feat(obs, env.observation_space)
+
+        action = env.action_space.

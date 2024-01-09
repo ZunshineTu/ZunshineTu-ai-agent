@@ -237,4 +237,5 @@ if __name__ == '__main__':
 
         action = env.action_space.sample()
         # test_out = [np.asarray([2],np.int64), np.asarray([3],np.int64)]
-        test_ou
+        test_out = gym_util.space_to_feat(action, env.action_space)
+        test_action = gym_uti

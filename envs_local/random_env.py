@@ -240,4 +240,5 @@ if __name__ == '__main__':
         test_out = gym_util.space_to_feat(action, env.action_space)
         test_action = gym_util.out_to_space(test_out, env.action_space, [0])
 
-    obs, reward, te
+    obs, reward, terminated, truncated, info = env.step(action)
+    # env.render()

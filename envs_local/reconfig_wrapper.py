@@ -7,4 +7,6 @@ import gymnasium as gym
 
 
 class ReconfigWrapperEnv(gym.Env):
-    metadat
+    metadata = {'render.modes': ['human']}
+    def __init__(self, env):
+        super(Rec

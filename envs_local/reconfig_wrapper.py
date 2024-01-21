@@ -9,4 +9,6 @@ import gymnasium as gym
 class ReconfigWrapperEnv(gym.Env):
     metadata = {'render.modes': ['human']}
     def __init__(self, env):
-        super(Rec
+        super(ReconfigWrapperEnv, self).__init__()
+        self.env = env
+        self.action_space =

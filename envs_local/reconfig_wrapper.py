@@ -11,4 +11,6 @@ class ReconfigWrapperEnv(gym.Env):
     def __init__(self, env):
         super(ReconfigWrapperEnv, self).__init__()
         self.env = env
-        self.action_space =
+        self.action_space = env.action_space
+        self.observation_space = env.observation_space
+   

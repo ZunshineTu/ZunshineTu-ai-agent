@@ -13,4 +13,6 @@ class ReconfigWrapperEnv(gym.Env):
         self.env = env
         self.action_space = env.action_space
         self.observation_space = env.observation_space
-   
+        self.metadata = env.metadata
+        self.reward_range = env.reward_range
+        self.spe

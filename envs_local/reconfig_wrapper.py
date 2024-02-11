@@ -18,4 +18,6 @@ class ReconfigWrapperEnv(gym.Env):
         self.spec = env.spec
 
         self.reconfig_act = False
-        if isinstance(env.action_spa
+        if isinstance(env.action_space, gym.spaces.Box) and env.action_space.shape[-1] > 1:
+            self.reconfig_act = True
+  

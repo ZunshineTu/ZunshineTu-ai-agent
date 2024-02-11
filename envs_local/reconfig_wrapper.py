@@ -20,4 +20,5 @@ class ReconfigWrapperEnv(gym.Env):
         self.reconfig_act = False
         if isinstance(env.action_space, gym.spaces.Box) and env.action_space.shape[-1] > 1:
             self.reconfig_act = True
-            num_feat_act = env.action_space.shape[-1]; self.num_feat_a
+            num_feat_act = env.action_space.shape[-1]; self.num_feat_act = num_feat_act
+            act_shape = env.action_space.shape[:-1] + (

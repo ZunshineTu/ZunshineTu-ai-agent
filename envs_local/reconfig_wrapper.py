@@ -24,4 +24,5 @@ class ReconfigWrapperEnv(gym.Env):
             act_shape = env.action_space.shape[:-1] + (1,)
             act = []
             for i in range(num_feat_act):
-                fe
+                feat = gym.spaces.Box(
+                    low=env.action_space.low[...,i:i

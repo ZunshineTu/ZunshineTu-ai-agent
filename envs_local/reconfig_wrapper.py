@@ -29,4 +29,6 @@ class ReconfigWrapperEnv(gym.Env):
                     high=env.action_space.high[...,i:i+1],
                     shape=act_shape,
                     dtype=env.action_space.dtype
-        
+                )
+                act.append(feat)
+            act = gym.spaces.Tuple(act)

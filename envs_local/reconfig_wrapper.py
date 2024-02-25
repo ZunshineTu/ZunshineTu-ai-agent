@@ -27,4 +27,6 @@ class ReconfigWrapperEnv(gym.Env):
                 feat = gym.spaces.Box(
                     low=env.action_space.low[...,i:i+1],
                     high=env.action_space.high[...,i:i+1],
-           
+                    shape=act_shape,
+                    dtype=env.action_space.dtype
+        

@@ -32,3 +32,7 @@ class ReconfigWrapperEnv(gym.Env):
                 )
                 act.append(feat)
             act = gym.spaces.Tuple(act)
+            self.action_space = act
+
+        self.reconfig_obs = False
+        if 

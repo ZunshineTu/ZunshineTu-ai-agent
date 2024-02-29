@@ -35,4 +35,5 @@ class ReconfigWrapperEnv(gym.Env):
             self.action_space = act
 
         self.reconfig_obs = False
-        if 
+        if isinstance(env.observation_space, gym.spaces.Box) and env.observation_space.shape[-1] > 1:
+            self.

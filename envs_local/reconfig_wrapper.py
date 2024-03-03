@@ -37,4 +37,5 @@ class ReconfigWrapperEnv(gym.Env):
         self.reconfig_obs = False
         if isinstance(env.observation_space, gym.spaces.Box) and env.observation_space.shape[-1] > 1:
             self.reconfig_obs = True
-            num_feat_obs = env.observation_space.shape[-1]; self.num_feat_
+            num_feat_obs = env.observation_space.shape[-1]; self.num_feat_obs = num_feat_obs
+            obs_shape = env.observation_space.shape[:-1] + (1,)

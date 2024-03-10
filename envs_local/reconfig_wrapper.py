@@ -39,3 +39,6 @@ class ReconfigWrapperEnv(gym.Env):
             self.reconfig_obs = True
             num_feat_obs = env.observation_space.shape[-1]; self.num_feat_obs = num_feat_obs
             obs_shape = env.observation_space.shape[:-1] + (1,)
+            obs = []
+            for i in range(num_feat_obs):
+                feat 

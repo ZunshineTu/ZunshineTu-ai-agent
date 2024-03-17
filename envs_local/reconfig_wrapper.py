@@ -45,3 +45,6 @@ class ReconfigWrapperEnv(gym.Env):
                     low=env.observation_space.low[...,i:i+1],
                     high=env.observation_space.high[...,i:i+1],
                     shape=obs_shape,
+                    dtype=env.observation_space.dtype
+                )
+            

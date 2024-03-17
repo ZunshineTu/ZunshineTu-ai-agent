@@ -47,4 +47,6 @@ class ReconfigWrapperEnv(gym.Env):
                     shape=obs_shape,
                     dtype=env.observation_space.dtype
                 )
-            
+                obs.append(feat)
+            obs.append(env.observation_space)
+        

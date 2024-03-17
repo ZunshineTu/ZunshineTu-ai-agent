@@ -41,4 +41,6 @@ class ReconfigWrapperEnv(gym.Env):
             obs_shape = env.observation_space.shape[:-1] + (1,)
             obs = []
             for i in range(num_feat_obs):
-                feat 
+                feat = gym.spaces.Box(
+                    low=env.observation_space.low[...,i:i+1],
+            

@@ -49,4 +49,8 @@ class ReconfigWrapperEnv(gym.Env):
                 )
                 obs.append(feat)
             obs.append(env.observation_space)
-        
+            obs = gym.spaces.Tuple(obs)
+            self.observation_space = obs
+
+
+    def seed(self): return se

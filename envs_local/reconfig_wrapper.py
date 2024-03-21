@@ -53,4 +53,5 @@ class ReconfigWrapperEnv(gym.Env):
             self.observation_space = obs
 
 
-    def seed(self): return se
+    def seed(self): return self.env.seed()
+    def render(self, mode='human', close=False): return self.env.render(mode, 

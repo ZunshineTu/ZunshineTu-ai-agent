@@ -58,4 +58,6 @@ class ReconfigWrapperEnv(gym.Env):
     def close(self): return self.env.close()
 
     def reset(self):
-        obs
+        obs, info = self.env.reset()
+        if self.reconfig_obs:
+            obs_ = [None]*(self.num_feat_

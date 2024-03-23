@@ -54,4 +54,8 @@ class ReconfigWrapperEnv(gym.Env):
 
 
     def seed(self): return self.env.seed()
-    def render(self, mode='human', close=False): return self.env.render(mode, 
+    def render(self, mode='human', close=False): return self.env.render(mode, close)
+    def close(self): return self.env.close()
+
+    def reset(self):
+        obs

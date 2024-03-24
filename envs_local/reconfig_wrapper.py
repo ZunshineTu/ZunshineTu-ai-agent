@@ -66,4 +66,6 @@ class ReconfigWrapperEnv(gym.Env):
             obs = tuple(obs_)
         return obs, info
 
-    def
+    def step(self, action):
+        if self.reconfig_act: action_ = np.concatenate(action, axis=-1)
+        

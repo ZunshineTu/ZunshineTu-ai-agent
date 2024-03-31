@@ -72,4 +72,7 @@ class ReconfigWrapperEnv(gym.Env):
         obs, reward, terminated, truncated, info = self.env.step(action_)
         if self.reconfig_obs:
             obs_ = [None]*(self.num_feat_obs+1)
-            for i in range(self.num_feat_obs): obs_[i] = obs[...,
+            for i in range(self.num_feat_obs): obs_[i] = obs[...,i:i+1]
+            obs_[-1] = obs
+            obs = tuple(obs_)
+        return o

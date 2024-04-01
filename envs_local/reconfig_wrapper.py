@@ -75,4 +75,7 @@ class ReconfigWrapperEnv(gym.Env):
             for i in range(self.num_feat_obs): obs_[i] = obs[...,i:i+1]
             obs_[-1] = obs
             obs = tuple(obs_)
-        return o
+        return obs, reward, terminated, truncated, info
+
+if __name__ == '__main__':
+    ## test

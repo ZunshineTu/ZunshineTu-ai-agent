@@ -79,4 +79,6 @@ class ReconfigWrapperEnv(gym.Env):
 
 if __name__ == '__main__':
     ## test
-    # env = gym.make('CartPole-v0') # ; env.observation_space.dtype = np.dtype
+    # env = gym.make('CartPole-v0') # ; env.observation_space.dtype = np.dtype('float64')
+    env = gym.make('LunarLanderContinuous-v2')
+    # env = gym.make('p

@@ -84,4 +84,6 @@ if __name__ == '__main__':
     # env = gym.make('procgen-chaser-v0')
     env = ReconfigWrapperEnv(env)
     obs, info = env.reset()
-    # p
+    # print("main reset", obs)
+    action = env.action_space.sample()
+    # print("main action", ac

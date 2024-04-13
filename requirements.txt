@@ -1,2 +1,4 @@
 Box2D==2.3.10
-TA-Lib==0.4.2
+TA-Lib==0.4.25
+build==0.8.0
+gym==0.23.1  # Do not increase past 0.23.1 until this is live: https://github

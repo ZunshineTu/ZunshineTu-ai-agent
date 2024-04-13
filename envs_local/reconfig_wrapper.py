@@ -86,4 +86,6 @@ if __name__ == '__main__':
     obs, info = env.reset()
     # print("main reset", obs)
     action = env.action_space.sample()
-    # print("main action", ac
+    # print("main action", action)
+    obs, reward, terminated, truncated, info = env.step(action)
+    # pr

@@ -14,4 +14,4 @@ pyglet==1.5.27
 tensorflow-gpu==2.9.1
 tensorflow_addons==0.18.0
 tensorflow_datasets==4.6.0
-tensorflow_p
+tensorflow_probability==0.17.0

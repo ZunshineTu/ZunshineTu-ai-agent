@@ -1,4 +1,10 @@
 #!/usr/bin/python
 
 import http.server
-i
+import socketserver
+import os
+
+PORT = 8080
+
+os.chdir('output')
+Handler = http.server.S

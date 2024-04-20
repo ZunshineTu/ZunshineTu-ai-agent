@@ -10,4 +10,5 @@ os.chdir('output')
 Handler = http.server.SimpleHTTPRequestHandler
 
 with socketserver.TCPServer(("", PORT), Handler) as httpd:
-    prin
+    print("serving at port", PORT)
+    httpd.serve_forever()
